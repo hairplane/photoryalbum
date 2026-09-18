@@ -1,4 +1,4 @@
-<!-- v1.1: 우리가족 캘린더용 eventsDB CSV URL 연동 및 버전 초기화 -->
+<!-- v1.2: 메인으로 돌아가기 버튼 제거 및 버전 갱신 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -27,26 +27,6 @@
       padding: 12px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-    .home-btn-container {
-      margin-bottom: 12px;
-    }
-    .home-btn {
-      display: inline-block;
-      padding: 6px 12px;
-      background-color: #ffffff;
-      color: #2c3e50;
-      text-decoration: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-      transition: all 0.2s ease;
-    }
-    .home-btn:hover {
-      background-color: #f1f5f9;
-      border-color: #94a3b8;
     }
     header {
       margin-bottom: 12px;
@@ -1492,16 +1472,12 @@
 </head>
 <body>
   <div class="container">
-    <div class="home-btn-container">
-      <a href="../index.html" class="home-btn">&larr; 메인으로 돌아가기</a>
-    </div>
-
     <header>
       <h1>
         <span class="title-wrap">홍병희 가족 캘린더</span>
         <span class="title-break">
           <span class="title-wrap">(1994 - 2030)</span>
-          <span class="version">v1.1</span>
+          <span class="version">v1.2</span>
         </span>
       </h1>
     </header>
@@ -1774,7 +1750,6 @@
   </div>
 
   <script>
-    // 우리가족 eventsDB 웹 게시 CSV 주소 연동 (v1.1)
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=0&single=true&output=csv';
     const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0XaTAnxMjvbFKg8GRdMytfgsNWltOD67BiBPg02PYGh5ndC1vmb2jP6nvMHzy5cGWI0wiy_e4/pub?gid=0&single=true&output=csv';
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
