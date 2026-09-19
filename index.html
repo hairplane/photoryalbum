@@ -1,4 +1,4 @@
-<!-- v1.6: 중요 태그 디자인 개편(하얀색 별표, 분류 색상 적용, 명칭 '중요'), 데이터 규칙 안내 영역 삭제, 오류 안내 타이틀에 (X) 표기 추가 -->
+<!-- v1.7: 오류 안내 타이틀 '오류(X)' 빨간색 표기, 독립된 중요 범례 제거, 설정(⚙️) 창 도입 및 분류 항목 명칭 인라인 직접 수정/개별 체크박스 디스플레이 제어 기능 구현 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -48,14 +48,14 @@ h1 .version {font-size: 0.75rem; color: #2563eb; background: #dbeafe; padding: 2
 .strip-card-date {font-size: 0.62rem; color: #475569; font-weight: 600; margin-top: 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;}
 .strip-card-title {font-size: 0.58rem; color: #0f172a; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;}
 
-/* 범례 바 영역 (분류 관리 버튼 포함 - 매트릭스 상단) */
+/* 범례 바 영역 (설정 버튼 포함 - 매트릭스 상단) */
 .legend-bar-wrapper {display: flex; justify-content: space-between; align-items: center; background: #f1f3f5; border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;}
 .legend-bar {display: flex; align-items: center; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; font-weight: 600;}
 .legend-item {display: flex; align-items: center; gap: 4px;}
 
-/* 분류 관리 설정 버튼 스타일 */
-.category-manager-open-btn {background: #ffffff; color: #495057; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s ease; flex-shrink: 0;}
-.category-manager-open-btn:hover {background: #e2e8f0; border-color: #adb5bd;}
+/* 설정 버튼 스타일 (v1.7) */
+.settings-open-btn {background: #ffffff; color: #495057; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s ease; flex-shrink: 0;}
+.settings-open-btn:hover {background: #e2e8f0; border-color: #adb5bd;}
 
 /* 테이블 영역 */
 .table-container {width: 100%; overflow-x: visible;}
@@ -79,7 +79,7 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .symbol-error {color: #ff1744; font-size: 0.85rem !important; font-weight: bold; background-color: transparent; padding: 0;}
 .symbol-empty {color: #adb5bd; font-size: 0.7rem !important;}
 
-/* 중요 태그 스타일 (v1.6: 하얀색 별표 및 분류 색상 연동) */
+/* 중요 태그 스타일 */
 .important-badge-icon {display: inline-flex; justify-content: center; align-items: center; width: 16px; height: 16px; border-radius: 50%; font-size: 0.65rem; color: #ffffff; font-weight: bold; margin-right: 1px; vertical-align: middle;}
 .important-star-inline {color: #ff0033; font-size: 0.95rem; margin-right: 1px; vertical-align: middle; font-weight: bold;}
 
@@ -93,20 +93,24 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .modal-close-btn:hover {background-color: rgba(255, 255, 255, 0.2);}
 .modal-body {padding: 10px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;}
 
-/* 분류 관리창 (드래그 앤 드롭 정렬 지원) */
+/* 설정 창 (분류 항목 관리 인라인 수정 및 체크박스 제어) */
 .category-manager-body {display: flex; flex-direction: column; gap: 12px; font-size: 0.8rem;}
 .category-add-row {display: flex; gap: 8px; align-items: center;}
 .category-add-row input[type="text"] {flex: 1; height: 32px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; outline: none;}
 .category-add-row input[type="color"] {width: 36px; height: 32px; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; padding: 2px;}
 .category-add-row button {height: 32px; padding: 0 14px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
 .category-add-row button:hover {background: #1d4ed8;}
+.category-list-header-row {display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #475569; padding: 0 2px;}
+.category-list-header-row a {color: #2563eb; text-decoration: none; font-weight: 600; cursor: pointer;}
+.category-list-header-row a:hover {text-decoration: underline;}
 .category-list-container {display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #f8fafc;}
 .category-item-row {display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; gap: 8px; cursor: grab; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;}
 .category-item-row:active {cursor: grabbing;}
 .category-item-row.dragging {opacity: 0.4; background: #f1f5f9; border: 2px dashed #3b82f6;}
 .category-item-left {display: flex; align-items: center; gap: 8px; flex: 1;}
 .drag-handle {color: #94a3b8; font-weight: bold; font-size: 1rem; cursor: grab; padding: 0 2px;}
-.category-item-name {font-weight: 600; color: #1e293b; font-size: 0.82rem;}
+.category-name-input {font-weight: 600; color: #1e293b; font-size: 0.82rem; border: 1px solid transparent; background: transparent; padding: 2px 4px; border-radius: 4px; width: 100%; outline: none; transition: all 0.15s ease;}
+.category-name-input:focus {border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);}
 .category-item-right {display: flex; align-items: center; gap: 8px;}
 .category-toggle-label {display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #475569; cursor: pointer; user-select: none;}
 .category-del-btn {background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; padding: 2px 6px; font-size: 0.72rem; cursor: pointer; font-weight: 600;}
@@ -284,7 +288,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap">(1994 - 2030)</span>
-        <span class="version">v1.6</span>
+        <span class="version">v1.7</span>
       </span>
     </h1>
   </header>
@@ -316,18 +320,18 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
     <div id="photoStripScroll" class="photo-strip-scroll"></div>
   </div>
 
-  <!-- 입력 데이터 오류 안내 (X) 영역 (v1.6: 데이터 규칙 안내 섹션 삭제 및 타이틀에 (X) 표기) -->
+  <!-- 입력 데이터 오류 (<span style="color:#ff1744;">X</span>) 안내 영역 -->
   <div id="error-container" class="error-box" style="display: none;">
     <div class="error-header">
-      <h3 style="margin: 0;">입력 데이터 오류 안내 (X)</h3>
+      <h3 style="margin: 0;">입력 데이터 오류 <span style="color: #ff1744; font-weight: bold;">(X)</span> 안내</h3>
     </div>
     <ul id="error-list" class="error-list"></ul>
   </div>
 
-  <!-- 범례 바 및 분류 관리 버튼 영역 (캘린더 매트릭스 상단) -->
+  <!-- 범례 바 및 설정 버튼 영역 (캘린더 매트릭스 상단 - 메인 분류 관리 버튼 숨김 완료) -->
   <div class="legend-bar-wrapper">
     <div id="legendBar" class="legend-bar"></div>
-    <button type="button" class="category-manager-open-btn" onclick="openCategoryManagerModal()">📁 분류 항목 관리</button>
+    <button type="button" class="settings-open-btn" onclick="openSettingsModal()">⚙️ 설정</button>
   </div>
 
   <!-- 캘린더 본문 테이블 -->
@@ -347,21 +351,28 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
   </div>
 </div>
 
-<!-- 📁 분류 항목 관리 모달 (드래그 앤 드롭 정렬 지원) -->
+<!-- ⚙️ 설정 (분류 항목 관리) 모달 -->
 <div id="categoryManagerModal" class="modal-overlay">
   <div class="modal-content" style="max-width: 480px;">
     <div class="modal-header" style="background-color: #0f766e;">
-      <h2>📁 분류 항목 관리</h2>
+      <h2>⚙️ 설정 및 분류 항목 관리</h2>
       <button type="button" class="modal-close-btn" onclick="closeCategoryManagerModal()">&times;</button>
     </div>
     <div class="modal-body">
       <div style="font-size: 0.78rem; color: #475569; line-height: 1.4;">
-        항목을 마우스나 터치로 끌어서 순서를 변경할 수 있습니다. (추가·삭제·숨김 설정 포함)
+        항목명을 직접 클릭하여 수정하거나, 드래그하여 순서를 변경할 수 있습니다. 체크된 항목만 캘린더에 디스플레이됩니다.
       </div>
       <div class="category-add-row">
         <input type="text" id="newCategoryNameInput" placeholder="새 분류명 입력 (예: 회의, 모임)" autocomplete="off">
         <input type="color" id="newCategoryColorInput" value="#0284c7" title="분류 색상 선택">
         <button type="button" onclick="addNewCategory()">추가</button>
+      </div>
+      <div class="category-list-header-row">
+        <span>분류 목록 및 디스플레이 제어</span>
+        <div>
+          <a onclick="setAllCategoryVisible(true)">전체 선택</a> | 
+          <a onclick="setAllCategoryVisible(false)">전체 해제</a>
+        </div>
       </div>
       <div id="categoryListContainer" class="category-list-container" ondragover="event.preventDefault()"></div>
     </div>
@@ -573,14 +584,14 @@ const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0Xa
 const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v1.6: 디폴트 분류 항목 및 '중요' 태그 색상 연동 지원 */
+/* v1.7: 디폴트 분류 항목 및 설정/체크박스/인라인 수정 기능 지원 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
   { name: '기념', color: '#f738f7', visible: true },
   { name: '여행', color: '#00b050', visible: true },
   { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v16';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v17';
 
 let globalCategoriesConfig = [];
 
@@ -818,12 +829,12 @@ attachSafeOverlayClose('galleryModal', requestCloseGalleryModal);
 attachSafeOverlayClose('addEventModal', closeAddEventModal);
 attachSafeOverlayClose('categoryManagerModal', closeCategoryManagerModal);
 
-function openCategoryManagerModal() {
+function openSettingsModal() {
   renderCategoryManagerList();
   document.getElementById('categoryManagerModal').style.display = 'flex';
 }
 
-/* 분류 관리창 드래그 앤 드롭 정렬 (네이버 메모 스타일) */
+/* 분류 관리창 드래그 앤 드롭 및 인라인 편집 구현 */
 let draggedCategoryIndex = null;
 
 function renderCategoryManagerList() {
@@ -831,12 +842,13 @@ function renderCategoryManagerList() {
   const container = document.getElementById('categoryListContainer');
   let html = '';
   cats.forEach((cat, idx) => {
+    const safeName = cat.name.replace(/"/g, '&quot;');
     html += `
       <div class="category-item-row" draggable="true" ondragstart="handleCategoryDragStart(event, ${idx})" ondragover="handleCategoryDragOver(event, ${idx})" ondragleave="handleCategoryDragLeave(event)" ondrop="handleCategoryDrop(event, ${idx})" ontouchstart="handleTouchStart(event, ${idx})" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
         <div class="category-item-left">
           <span class="drag-handle" title="마우스나 터치로 순서 변경">☰</span>
           <input type="color" value="${cat.color}" onchange="updateCategoryColor(${idx}, this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" title="색상 변경">
-          <span class="category-item-name">${cat.name}</span>
+          <input type="text" class="category-name-input" value="${safeName}" onchange="updateCategoryName(${idx}, this.value)" placeholder="분류명 입력" title="클릭하여 이름 수정">
         </div>
         <div class="category-item-right">
           <label class="category-toggle-label">
@@ -874,17 +886,7 @@ function handleCategoryDragLeave(e) {
 
 function handleCategoryDrop(e, index) {
   e.preventDefault();
-  const container = document.getElementById('categoryListContainer');
-  const rows = Array.from(container.querySelectorAll('.category-item-row'));
-  let newCats = [];
-  rows.forEach(row => {
-    const name = row.querySelector('.category-item-name').textContent;
-    const color = row.querySelector('input[type="color"]').value;
-    const visible = row.querySelector('input[type="checkbox"]').checked;
-    newCats.push({ name, color, visible });
-  });
-  saveCategoriesConfig(newCats);
-  renderCategoryManagerList();
+  syncCategoriesFromDOM();
 }
 
 let touchDraggedIndex = null;
@@ -909,18 +911,28 @@ function handleTouchEnd(e) {
   touchDraggedIndex = null;
 }
 
-function addNewCategory() {
-  const nameInput = document.getElementById('newCategoryNameInput');
-  const colorInput = document.getElementById('newCategoryColorInput');
-  const name = nameInput.value.trim();
-  const color = colorInput.value;
-  if (!name) { alert('분류명을 입력해주세요.'); return; }
+function syncCategoriesFromDOM() {
+  const container = document.getElementById('categoryListContainer');
+  const rows = Array.from(container.querySelectorAll('.category-item-row'));
+  let newCats = [];
+  rows.forEach(row => {
+    const name = row.querySelector('.category-name-input').value.trim();
+    const color = row.querySelector('input[type="color"]').value;
+    const visible = row.querySelector('input[type="checkbox"]').checked;
+    if (name) {
+      newCats.push({ name, color, visible });
+    }
+  });
+  saveCategoriesConfig(newCats);
+}
+
+function updateCategoryName(index, newName) {
   let cats = getCategoriesConfig();
-  if (cats.some(c => c.name === name)) { alert('이미 존재하는 분류명입니다.'); return; }
-  cats.push({ name: name, color: color, visible: true });
+  const trimmed = newName.trim();
+  if (!trimmed) { alert('분류명은 공백일 수 없습니다.'); renderCategoryManagerList(); return; }
+  if (cats.some((c, i) => i !== index && c.name === trimmed)) { alert('이미 존재하는 분류명입니다.'); renderCategoryManagerList(); return; }
+  cats[index].name = trimmed;
   saveCategoriesConfig(cats);
-  nameInput.value = '';
-  renderCategoryManagerList();
 }
 
 function updateCategoryColor(index, color) {
@@ -939,6 +951,13 @@ function toggleCategoryVisible(index, visible) {
   }
 }
 
+function setAllCategoryVisible(visibleStatus) {
+  let cats = getCategoriesConfig();
+  cats.forEach(c => c.visible = visibleStatus);
+  saveCategoriesConfig(cats);
+  renderCategoryManagerList();
+}
+
 function deleteCategory(index) {
   let cats = getCategoriesConfig();
   if (cats.length <= 1) { alert('최소 1개 이상의 분류 항목이 필요합니다.'); return; }
@@ -947,14 +966,25 @@ function deleteCategory(index) {
   renderCategoryManagerList();
 }
 
+function addNewCategory() {
+  syncCategoriesFromDOM();
+  const nameInput = document.getElementById('newCategoryNameInput');
+  const colorInput = document.getElementById('newCategoryColorInput');
+  const name = nameInput.value.trim();
+  const color = colorInput.value;
+  if (!name) { alert('분류명을 입력해주세요.'); return; }
+  let cats = getCategoriesConfig();
+  if (cats.some(c => c.name === name)) { alert('이미 존재하는 분류명입니다.'); return; }
+  cats.push({ name: name, color: color, visible: true });
+  saveCategoriesConfig(cats);
+  nameInput.value = '';
+  renderCategoryManagerList();
+}
+
 function renderLegendBar() {
   const legendBar = document.getElementById('legendBar');
   const cats = getCategoriesConfig();
-  
-  // v1.6: '중요' 태그는 첫 번째 활성화된 분류 항목(또는 기본 '행사' 분류)의 색상을 상속받도록 설정
-  const firstVisibleCat = cats.find(c => c.visible !== false) || cats[0] || { color: '#0066ff' };
-  let html = `<div class="legend-item"><span class="important-badge-icon" style="background-color: ${firstVisibleCat.color};">★</span> 중요</div>`;
-  
+  let html = '';
   cats.forEach(cat => {
     if (cat.visible !== false) {
       html += `<div class="legend-item"><span style="color:${cat.color}; font-size:1.1rem; font-weight:bold;">●</span> ${cat.name}</div>`;
@@ -1717,6 +1747,8 @@ function openDayModal(year, month) {
   monthEvents.forEach(item => {
     const day = item.day;
     if (day && day >= 1 && day <= lastDate) {
+      const catProps = getCategoryProps(item.category);
+      if (catProps.visible === false) return; // 숨겨진 카테고리 일정은 일력에서도 제외
       if (!dayEventsMap[day]) dayEventsMap[day] = [];
       dayEventsMap[day].push(item);
     }
@@ -1825,6 +1857,8 @@ function handleSearchInput() {
     for (const key in globalEventMap) {
       let monthHasMatch = false;
       globalEventMap[key].forEach(evt => {
+        const catProps = getCategoryProps(evt.category);
+        if (catProps.visible === false) return;
         const combined = `${evt.title || ''} ${evt.place || ''} ${evt.note || ''} ${evt.attendees || ''}`.toLowerCase();
         if (combined.includes(qLower)) {
           matchCount++;
@@ -2012,9 +2046,15 @@ function renderCalendarTable() {
       td.onclick = () => openDayModal(year, month);
 
       const monthEvents = globalEventMap[`${year}-${month}`];
-      if (monthEvents && monthEvents.length > 0) {
+      // 각 카테고리의 보이기 여부에 따라 필터링
+      const filteredEvents = monthEvents ? monthEvents.filter(item => {
+        const catProps = getCategoryProps(item.category);
+        return catProps.visible !== false;
+      }) : [];
+
+      if (filteredEvents && filteredEvents.length > 0) {
         let symbolsHtml = '<div class="symbol-wrapper">';
-        symbolsHtml += monthEvents.map(item => {
+        symbolsHtml += filteredEvents.map(item => {
           let tooltipLines = [];
           if (item.isValid) {
             tooltipLines.push(`[${month}월 ${item.day}일] ${item.isImportant ? '★ ' : ''}[${item.category}] ${item.title || '(제목 없음)'}`);
@@ -2031,7 +2071,6 @@ function renderCalendarTable() {
           if (!item.isValid) {
             return `<span class="symbol-error" title="${tooltipText}">X</span>`;
           }
-          // v1.6: 중요 태그인 경우 해당 분류 색상의 하얀색 별표(★) 아이콘으로 렌더링
           if (item.isImportant) {
             return `<span class="important-badge-icon" style="background-color: ${catProps.color};" title="${tooltipText}">★</span>`;
           }
