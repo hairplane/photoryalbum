@@ -1,4 +1,4 @@
-<!-- v2.1: 캘린더 이름 및 연도 범위 변경 시 '변경할까요?' 컨펌(예/아니오) 확인 체계 도입, 공용 및 개인 항목 관리 시 삭제 전 안전 확인 절차 및 모바일 구글 킵 스타일('+')의 최하단 동적 추가 입력 방식 적용 -->
+<!-- v2.2: v2.0 방식의 상단 고정형 항목 추가 입력 복구, 캘린더 이름 및 연도 범위 변경 시 커스텀 컨펌 모달('변경할까요? 예/아니오') 도입, 공용 및 개인 항목 삭제 시 커스텀 확인 모달 적용, 설정 모달 하단 버튼 명칭 '설정 나가기'로 변경 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -104,8 +104,13 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .settings-row button {height: 32px; padding: 0 14px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
 .settings-row button:hover {background: #1d4ed8;}
 
-/* 모바일 킵 스타일의 최하단 '+' 신규 입력 바 스타일 (v2.1) */
-.category-list-container {display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #ffffff;}
+/* v2.0 방식 상단 고정형 항목 추가 및 리스트 스타일 */
+.category-add-row {display: flex; gap: 8px; align-items: center; margin-top: 4px;}
+.category-add-row input[type="text"] {flex: 1; height: 32px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; outline: none; background: #ffffff;}
+.category-add-row input[type="color"] {width: 36px; height: 32px; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; padding: 2px;}
+.category-add-row button {height: 32px; padding: 0 14px; background: #0f766e; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
+.category-add-row button:hover {background: #115e59;}
+.category-list-container {display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #ffffff; margin-top: 4px;}
 .category-item-row {display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; gap: 8px; cursor: grab; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;}
 .category-item-row:active {cursor: grabbing;}
 .category-item-row.dragging {opacity: 0.4; background: #f1f5f9; border: 2px dashed #3b82f6;}
@@ -116,11 +121,17 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .category-del-btn {background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; padding: 2px 6px; font-size: 0.72rem; cursor: pointer; font-weight: 600;}
 .category-del-btn:hover {background: #fecaca;}
 
-/* 킵 스타일 최하단 추가 바 */
-.keep-add-bar {display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 6px; padding: 6px 10px; margin-top: 4px; cursor: pointer; transition: all 0.2s ease;}
-.keep-add-bar:hover {border-color: #0f766e; background: #f0fdf4;}
-.keep-add-plus {font-size: 1.1rem; font-weight: bold; color: #0f766e; width: 24px; text-align: center;}
-.keep-add-input {flex: 1; border: none; outline: none; font-size: 0.82rem; background: transparent; color: #334155;}
+/* 커스텀 컨펌 모달 (예쁘고 세련된 디자인) */
+.custom-confirm-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 4000; justify-content: center; align-items: center; padding: 12px;}
+.custom-confirm-content {background: #ffffff; width: 100%; max-width: 380px; border-radius: 10px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); overflow: hidden; display: flex; flex-direction: column; animation: modalFadeIn 0.2s ease-out;}
+.custom-confirm-header {background: #0f766e; color: #ffffff; padding: 12px 16px; font-size: 0.95rem; font-weight: 700;}
+.custom-confirm-body {padding: 18px 16px; font-size: 0.88rem; color: #334155; line-height: 1.5; text-align: center;}
+.custom-confirm-footer {padding: 10px 16px; background: #f1f5f9; display: flex; gap: 8px; justify-content: flex-end;}
+.custom-confirm-btn {padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; border: none;}
+.custom-confirm-btn.cancel {background: #ffffff; border: 1px solid #cbd5e1; color: #475569;}
+.custom-confirm-btn.cancel:hover {background: #f8fafc;}
+.custom-confirm-btn.ok {background: #0f766e; color: #ffffff;}
+.custom-confirm-btn.ok:hover {background: #115e59;}
 
 /* 일력 모달 그리드 */
 .day-calendar-grid {display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; width: 100%;}
@@ -294,7 +305,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap" id="mainTitleText">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap" id="mainYearRangeText">(1994 - 2030)</span>
-        <span class="version">v2.1</span>
+        <span class="version">v2.2</span>
       </span>
     </h1>
     <button type="button" class="settings-open-btn" onclick="openSettingsModal()">⚙️ 설정</button>
@@ -357,7 +368,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
   </div>
 </div>
 
-<!-- ⚙️ 설정 모달 (v2.1 확인 체계 및 킵 스타일 '+' 입력 방식 반영) -->
+<!-- ⚙️ 설정 모달 (v2.2: v2.0 상단 고정 입력 복구 및 '설정 나가기' 버튼 반영) -->
 <div id="categoryManagerModal" class="modal-overlay">
   <div class="modal-content" style="max-width: 540px;">
     <div class="modal-header" style="background-color: #0f766e;">
@@ -385,22 +396,44 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
         </div>
       </div>
 
-      <!-- 3. 공용 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) -->
+      <!-- 3. 공용 항목 관리 (v2.0 상단 고정 입력 및 커스텀 컨펌 삭제) -->
       <div class="settings-section">
         <h3>3. 공용 항목 관리 (공유 카테고리)</h3>
         <div style="font-size: 0.76rem; color: #475569;">항목명을 클릭하여 수정하거나 순서를 드래그하여 변경할 수 있습니다.</div>
+        <div class="category-add-row">
+          <input type="text" id="newCategoryNameInput" placeholder="새 공용 분류명 입력" autocomplete="off">
+          <input type="color" id="newCategoryColorInput" value="#0284c7" title="분류 색상 선택">
+          <button type="button" onclick="addNewCategory()">추가</button>
+        </div>
         <div id="categoryListContainer" class="category-list-container" ondragover="event.preventDefault()"></div>
       </div>
 
-      <!-- 4. 개인 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) -->
+      <!-- 4. 개인 항목 관리 (v2.0 상단 고정 입력 및 커스텀 컨펌 삭제) -->
       <div class="settings-section">
         <h3>4. 개인 항목 관리 (나만의 필터링)</h3>
         <div style="font-size: 0.76rem; color: #475569;">이 기기의 브라우저에만 저장되는 개인 전용 항목입니다.</div>
+        <div class="category-add-row">
+          <input type="text" id="newPersonalCategoryNameInput" placeholder="새 개인 항목명 입력" autocomplete="off">
+          <input type="color" id="newPersonalCategoryColorInput" value="#10b981" title="개인 항목 색상 선택">
+          <button type="button" onclick="addNewPersonalCategory()">추가</button>
+        </div>
         <div id="personalCategoryListContainer" class="category-list-container"></div>
       </div>
     </div>
     <div class="add-event-footer">
-      <button type="button" class="btn-submit" onclick="closeCategoryManagerModal()" style="background-color: #0f766e; flex: 1;">확인 및 설정 완료</button>
+      <button type="button" class="btn-submit" onclick="closeCategoryManagerModal()" style="background-color: #0f766e; flex: 1;">설정 나가기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🪟 커스텀 컨펌 모달 (예쁘고 세련된 예/아니오 확인 창) -->
+<div id="customConfirmModal" class="custom-confirm-overlay">
+  <div class="custom-confirm-content">
+    <div id="customConfirmHeader" class="custom-confirm-header">확인</div>
+    <div id="customConfirmBody" class="custom-confirm-body">내용 메시지</div>
+    <div class="custom-confirm-footer">
+      <button type="button" id="customConfirmCancelBtn" class="custom-confirm-btn cancel">아니오</button>
+      <button type="button" id="customConfirmOkBtn" class="custom-confirm-btn ok">예</button>
     </div>
   </div>
 </div>
@@ -607,17 +640,17 @@ const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0Xa
 const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v2.1: 캘린더 이름/연도 변경 컨펌 체계 및 킵 스타일 '+' 입력 방식 구현 */
+/* v2.2: 커스텀 컨펌 모달 및 v2.0 상단 고정 입력 방식 구현 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
   { name: '기념', color: '#f738f7', visible: true },
   { name: '여행', color: '#00b050', visible: true },
   { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v21';
-const LOCAL_STORAGE_KEY_PERSONAL_CATS = 'photoryalbum_personal_categories_v21';
-const LOCAL_STORAGE_KEY_CALENDAR_TITLE = 'photoryalbum_calendar_title_v21';
-const LOCAL_STORAGE_KEY_YEAR_RANGE = 'photoryalbum_year_range_v21';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v22';
+const LOCAL_STORAGE_KEY_PERSONAL_CATS = 'photoryalbum_personal_categories_v22';
+const LOCAL_STORAGE_KEY_CALENDAR_TITLE = 'photoryalbum_calendar_title_v22';
+const LOCAL_STORAGE_KEY_YEAR_RANGE = 'photoryalbum_year_range_v22';
 
 let globalCategoriesConfig = [];
 let globalPersonalCategoriesConfig = [];
@@ -683,24 +716,43 @@ function getCalendarTitleSetting() {
   return '홍병희 가족 캘린더';
 }
 
-/* 1. 캘린더 이름 변경 확인 절차 (변경할까요? 예/아니오 및 변경 없음 무반응) */
+/* 커스텀 컨펌 모달 헬퍼 */
+function showCustomConfirm(message, onYes, title = '확인') {
+  const modal = document.getElementById('customConfirmModal');
+  document.getElementById('customConfirmHeader').textContent = title;
+  document.getElementById('customConfirmBody').textContent = message;
+  const yesBtn = document.getElementById('customConfirmOkBtn');
+  const cancelBtn = document.getElementById('customConfirmCancelBtn');
+  
+  const newYes = yesBtn.cloneNode(true);
+  const newCancel = cancelBtn.cloneNode(true);
+  yesBtn.parentNode.replaceChild(newYes, yesBtn);
+  cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+  newYes.onclick = () => {
+    modal.style.display = 'none';
+    if (onYes) onYes();
+  };
+  newCancel.onclick = () => {
+    modal.style.display = 'none';
+  };
+  modal.style.display = 'flex';
+}
+
+/* 1. 캘린더 이름 변경 확인 절차 (커스텀 모달 활용 및 변경 없음 무반응) */
 function promptSaveCalendarTitle() {
   const titleVal = document.getElementById('inputCalendarTitle').value.trim();
   if (!titleVal) { alert('캘린더 이름을 입력해주세요.'); return; }
   const currentTitle = getCalendarTitleSetting();
   if (titleVal === currentTitle) {
-    return; // 명칭 변경이 없으면 아무런 이벤트 발생 안 함
+    return; // 변경 없을 시 무반응
   }
-  if (confirm(`캘린더 이름을 "${titleVal}"(으)로 변경할까요?`)) {
-    saveCalendarTitleSettingAction(titleVal);
-  }
-}
-
-function saveCalendarTitleSettingAction(title) {
-  try {
-    localStorage.setItem(LOCAL_STORAGE_KEY_CALENDAR_TITLE, title);
-    applyCalendarTitleUI(title);
-  } catch(e) {}
+  showCustomConfirm(`캘린더 이름을 "${titleVal}"(으)로 변경할까요?`, () => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_CALENDAR_TITLE, titleVal);
+      applyCalendarTitleUI(titleVal);
+    } catch(e) {}
+  });
 }
 
 function applyCalendarTitleUI(title) {
@@ -723,7 +775,7 @@ function getYearRangeSetting() {
   return { start: 1975, end: 2030 };
 }
 
-/* 2. 캘린더 연도 범위 설정 확인 절차 (변경할까요? 예/아니오 및 변경 없음 무반응) */
+/* 2. 캘린더 연도 범위 설정 확인 절차 (커스텀 모달 활용 및 변경 없음 무반응) */
 function promptSaveYearRange() {
   const startInput = parseInt(document.getElementById('inputStartYear').value, 10);
   const endInput = parseInt(document.getElementById('inputEndYear').value, 10);
@@ -733,15 +785,15 @@ function promptSaveYearRange() {
   }
   const currentRange = getYearRangeSetting();
   if (startInput === currentRange.start && endInput === currentRange.end) {
-    return; // 범위 변경이 없으면 무반응
+    return; // 범위 변경 없으면 무반응
   }
-  if (confirm(`캘린더 연도 범위를 ${startInput} ~ ${endInput}년으로 변경할까요?`)) {
+  showCustomConfirm(`캘린더 연도 범위를 ${startInput} ~ ${endInput}년으로 변경할까요?`, () => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY_YEAR_RANGE, JSON.stringify({ start: startInput, end: endInput }));
       applyYearRangeUI(startInput, endInput);
       renderCalendarTable();
     } catch(e) {}
-  }
+  });
 }
 
 function applyYearRangeUI(start, end) {
@@ -922,6 +974,8 @@ window.addEventListener('popstate', function(e) {
   const galleryModal = document.getElementById('galleryModal');
   const dayModal = document.getElementById('dayModal');
   const catModal = document.getElementById('categoryManagerModal');
+  const confirmModal = document.getElementById('customConfirmModal');
+  if (confirmModal && confirmModal.style.display === 'flex') { confirmModal.style.display = 'none'; return; }
   if (confirmEventModal && confirmEventModal.style.display === 'flex') { confirmEventModal.style.display = 'none'; return; }
   if (addEventModal && addEventModal.style.display === 'flex') { addEventModal.style.display = 'none'; return; }
   if (catModal && catModal.style.display === 'flex') { catModal.style.display = 'none'; return; }
@@ -955,6 +1009,7 @@ attachSafeOverlayClose('photoModal', requestClosePhotoModal);
 attachSafeOverlayClose('galleryModal', requestCloseGalleryModal);
 attachSafeOverlayClose('addEventModal', closeAddEventModal);
 attachSafeOverlayClose('categoryManagerModal', closeCategoryManagerModal);
+attachSafeOverlayClose('customConfirmModal', () => { document.getElementById('customConfirmModal').style.display = 'none'; });
 
 function openSettingsModal() {
   document.getElementById('inputCalendarTitle').value = getCalendarTitleSetting();
@@ -966,7 +1021,7 @@ function openSettingsModal() {
   document.getElementById('categoryManagerModal').style.display = 'flex';
 }
 
-/* 3. 공용 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) */
+/* 3. 공용 항목 관리 (v2.0 상단 고정 입력 및 커스텀 확인 창 삭제) */
 let draggedCategoryIndex = null;
 
 function renderCategoryManagerList() {
@@ -986,31 +1041,7 @@ function renderCategoryManagerList() {
       </div>
     `;
   });
-  // 모바일 구글 킵 스타일의 최하단 '+' 입력 바 추가
-  html += `
-    <div class="keep-add-bar" onclick="focusKeepAddInput('keepNewCatInput')">
-      <span class="keep-add-plus">+</span>
-      <input type="text" id="keepNewCatInput" class="keep-add-input" placeholder="새 공용 분류 항목 추가..." autocomplete="off" onkeydown="handleKeepAddKeyDown(event, 'category')">
-      <input type="color" id="keepNewCatColor" value="#0284c7" title="색상 선택" style="width:22px; height:22px; border:none; background:none; cursor:pointer;" onclick="event.stopPropagation()">
-    </div>
-  `;
   container.innerHTML = html;
-}
-
-function focusKeepAddInput(inputId) {
-  const input = document.getElementById(inputId);
-  if (input) input.focus();
-}
-
-function handleKeepAddKeyDown(event, type) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    if (type === 'category') {
-      addNewCategoryFromKeep();
-    } else if (type === 'personal') {
-      addNewPersonalCategoryFromKeep();
-    }
-  }
 }
 
 function handleCategoryDragStart(e, index) {
@@ -1064,32 +1095,37 @@ function promptDeleteCategory(index) {
   let cats = getCategoriesConfig();
   if (cats.length <= 1) { alert('최소 1개 이상의 공용 분류 항목이 필요합니다.'); return; }
   const targetName = cats[index].name;
-  if (confirm(`"${targetName}" 공용 항목을 정말 삭제하시겠습니까?`)) {
+  showCustomConfirm(`"${targetName}" 공용 항목을 정말 삭제하시겠습니까?`, () => {
     cats.splice(index, 1);
     saveCategoriesConfig(cats);
     renderCategoryManagerList();
-  }
+  }, '항목 삭제 확인');
 }
 
-function addNewCategoryFromKeep() {
+function addNewCategory() {
   syncCategoriesFromDOM();
-  const nameInput = document.getElementById('keepNewCatInput');
-  const colorInput = document.getElementById('keepNewCatColor');
+  const nameInput = document.getElementById('newCategoryNameInput');
+  const colorInput = document.getElementById('newCategoryColorInput');
   const name = nameInput.value.trim();
   const color = colorInput.value;
-  if (!name) return;
+  if (!name) { alert('공용 분류명을 입력해주세요.'); return; }
   let cats = getCategoriesConfig();
   if (cats.some(c => c.name === name)) { alert('이미 존재하는 분류명입니다.'); return; }
   cats.push({ name: name, color: color, visible: true });
   saveCategoriesConfig(cats);
+  nameInput.value = '';
   renderCategoryManagerList();
 }
 
-/* 5. 개인 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) */
+/* 4. 개인 항목 관리 (v2.0 상단 고정 입력 및 커스텀 확인 창 삭제) */
 function renderPersonalCategoryManagerList() {
   const pCats = getPersonalCategoriesConfig();
   const container = document.getElementById('personalCategoryListContainer');
   if (!container) return;
+  if (pCats.length === 0) {
+    container.innerHTML = `<div style="font-size:0.74rem; color:#94a3b8; text-align:center; padding:8px 0;">등록된 개인 항목이 없습니다.</div>`;
+    return;
+  }
   let html = '';
   pCats.forEach((cat, idx) => {
     const safeName = cat.name.replace(/"/g, '&quot;');
@@ -1103,14 +1139,6 @@ function renderPersonalCategoryManagerList() {
       </div>
     `;
   });
-  // 개인 항목 킵 스타일 최하단 추가 바
-  html += `
-    <div class="keep-add-bar" onclick="focusKeepAddInput('keepNewPerInput')">
-      <span class="keep-add-plus">+</span>
-      <input type="text" id="keepNewPerInput" class="keep-add-input" placeholder="새 개인 항목 추가..." autocomplete="off" onkeydown="handleKeepAddKeyDown(event, 'personal')">
-      <input type="color" id="keepNewPerColor" value="#10b981" title="색상 선택" style="width:22px; height:22px; border:none; background:none; cursor:pointer;" onclick="event.stopPropagation()">
-    </div>
-  `;
   container.innerHTML = html;
 }
 
@@ -1130,25 +1158,26 @@ function updatePersonalCategoryColor(index, color) {
 function promptDeletePersonalCategory(index) {
   let pCats = getPersonalCategoriesConfig();
   const targetName = pCats[index].name;
-  if (confirm(`"${targetName}" 개인 항목을 정말 삭제하시겠습니까?`)) {
+  showCustomConfirm(`"${targetName}" 개인 항목을 정말 삭제하시겠습니까?`, () => {
     pCats.splice(index, 1);
     savePersonalCategoriesConfig(pCats);
     renderPersonalCategoryManagerList();
-  }
+  }, '개인 항목 삭제 확인');
 }
 
-function addNewPersonalCategoryFromKeep() {
-  const nameInput = document.getElementById('keepNewPerInput');
-  const colorInput = document.getElementById('keepNewPerColor');
+function addNewPersonalCategory() {
+  const nameInput = document.getElementById('newPersonalCategoryNameInput');
+  const colorInput = document.getElementById('newPersonalCategoryColorInput');
   const name = nameInput.value.trim();
   const color = colorInput.value;
-  if (!name) return;
+  if (!name) { alert('새 개인 항목명을 입력해주세요.'); return; }
   let pCats = getPersonalCategoriesConfig();
   if (pCats.some(c => c.name === name) || getCategoriesConfig().some(c => c.name === name)) {
     alert('이미 존재하는 항목명입니다.'); return;
   }
   pCats.push({ name: name, color: color, visible: true });
   savePersonalCategoriesConfig(pCats);
+  nameInput.value = '';
   renderPersonalCategoryManagerList();
 }
 
@@ -1782,7 +1811,10 @@ document.addEventListener('keydown', (e) => {
   const galleryModal = document.getElementById('galleryModal');
   const dayModal = document.getElementById('dayModal');
   const catModal = document.getElementById('categoryManagerModal');
-  if (confirmEventModal && confirmEventModal.style.display === 'flex') {
+  const confirmModal = document.getElementById('customConfirmModal');
+  if (confirmModal && confirmModal.style.display === 'flex') {
+    if (e.key === 'Escape') confirmModal.style.display = 'none';
+  } else if (confirmEventModal && confirmEventModal.style.display === 'flex') {
     if (e.key === 'Escape') closeConfirmModal();
   } else if (addEventModal && addEventModal.style.display === 'flex') {
     if (e.key === 'Escape') closeAddEventModal();
