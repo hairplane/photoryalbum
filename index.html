@@ -1,4 +1,4 @@
-<!-- v2.2: v2.0 방식의 상단 고정형 항목 추가 입력 복구, 캘린더 이름 및 연도 범위 변경 시 커스텀 컨펌 모달('변경할까요? 예/아니오') 도입, 공용 및 개인 항목 삭제 시 커스텀 확인 모달 적용, 설정 모달 하단 버튼 명칭 '설정 나가기'로 변경 -->
+<!-- v2.3: 설정 모달 드래그 이동 기능 구현, 공용/개인 항목 리스트 컨테이너 높이 축소 및 항목 수에 따른 자동 높이 확장, 메인 화면 범례 바 '공용 항목'과 '개인 항목' 영역 분리 디스플레이 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -55,9 +55,11 @@ h1 .version {font-size: 0.75rem; color: #2563eb; background: #dbeafe; padding: 2
 .strip-card-date {font-size: 0.62rem; color: #475569; font-weight: 600; margin-top: 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;}
 .strip-card-title {font-size: 0.58rem; color: #0f172a; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;}
 
-/* 범례 바 영역 (매트릭스 상단) */
-.legend-bar-wrapper {display: flex; justify-content: space-between; align-items: center; background: #f1f3f5; border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;}
-.legend-bar {display: flex; align-items: center; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; font-weight: 600;}
+/* v2.3: 메인 화면 범례 바 영역 (공용 / 개인 항목 분리 디스플레이) */
+.legend-group-wrapper {display: flex; flex-direction: column; gap: 6px; background: #f1f3f5; border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px;}
+.legend-row {display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.8rem;}
+.legend-row-title {font-weight: 700; color: #475569; min-width: 60px;}
+.legend-items-box {display: flex; align-items: center; flex-wrap: wrap; gap: 12px;}
 .legend-item {display: flex; align-items: center; gap: 4px;}
 
 /* 테이블 영역 */
@@ -86,11 +88,11 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .important-badge-icon {display: inline-flex; justify-content: center; align-items: center; width: 16px; height: 16px; border-radius: 50%; font-size: 0.65rem; color: #ffffff; font-weight: bold; margin-right: 1px; vertical-align: middle;}
 .important-star-inline {color: #ff0033; font-size: 0.95rem; margin-right: 1px; vertical-align: middle; font-weight: bold;}
 
-/* 모달 공통 스타일 */
+/* 모달 공통 스타일 및 v2.3 드래그 이동 가능한 설정 모달 */
 .modal-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center; padding: 8px;}
-.modal-content {background: #ffffff; width: 100%; max-width: 540px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; animation: modalFadeIn 0.2s ease-out;}
+.modal-content {background: #ffffff; width: 100%; max-width: 540px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; animation: modalFadeIn 0.2s ease-out; position: absolute;}
 @keyframes modalFadeIn {from {opacity: 0; transform: translateY(-10px);} to {opacity: 1; transform: translateY(0);}}
-.modal-header {display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background-color: #2c3e50; color: #ffffff;}
+.modal-header {display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background-color: #2c3e50; color: #ffffff; cursor: move; user-select: none;}
 .modal-header h2 {font-size: 1.1rem; margin: 0; font-weight: 600;}
 .modal-close-btn {background: none; border: none; color: #ffffff; font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px;}
 .modal-close-btn:hover {background-color: rgba(255, 255, 255, 0.2);}
@@ -104,21 +106,21 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .settings-row button {height: 32px; padding: 0 14px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
 .settings-row button:hover {background: #1d4ed8;}
 
-/* v2.0 방식 상단 고정형 항목 추가 및 리스트 스타일 */
+/* v2.3: 상단 고정 입력 및 높이 축소/자동 확장 리스트 컨테이너 */
 .category-add-row {display: flex; gap: 8px; align-items: center; margin-top: 4px;}
 .category-add-row input[type="text"] {flex: 1; height: 32px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; outline: none; background: #ffffff;}
 .category-add-row input[type="color"] {width: 36px; height: 32px; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; padding: 2px;}
 .category-add-row button {height: 32px; padding: 0 14px; background: #0f766e; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
 .category-add-row button:hover {background: #115e59;}
-.category-list-container {display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #ffffff; margin-top: 4px;}
-.category-item-row {display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; gap: 8px; cursor: grab; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;}
+.category-list-container {display: flex; flex-direction: column; gap: 4px; overflow-y: visible; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; background: #ffffff; margin-top: 4px;}
+.category-item-row {display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; padding: 4px 8px; height: 32px; gap: 6px; cursor: grab; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;}
 .category-item-row:active {cursor: grabbing;}
 .category-item-row.dragging {opacity: 0.4; background: #f1f5f9; border: 2px dashed #3b82f6;}
-.category-item-left {display: flex; align-items: center; gap: 8px; flex: 1;}
-.drag-handle {color: #94a3b8; font-weight: bold; font-size: 1rem; cursor: grab; padding: 0 2px;}
-.category-name-input {font-weight: 600; color: #1e293b; font-size: 0.82rem; border: 1px solid transparent; background: transparent; padding: 2px 4px; border-radius: 4px; width: 100%; outline: none; transition: all 0.15s ease;}
+.category-item-left {display: flex; align-items: center; gap: 6px; flex: 1;}
+.drag-handle {color: #94a3b8; font-weight: bold; font-size: 0.9rem; cursor: grab; padding: 0 2px;}
+.category-name-input {font-weight: 600; color: #1e293b; font-size: 0.8rem; border: 1px solid transparent; background: transparent; padding: 2px 4px; border-radius: 4px; width: 100%; outline: none; transition: all 0.15s ease;}
 .category-name-input:focus {border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);}
-.category-del-btn {background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; padding: 2px 6px; font-size: 0.72rem; cursor: pointer; font-weight: 600;}
+.category-del-btn {background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; cursor: pointer; font-weight: 600; height: 26px;}
 .category-del-btn:hover {background: #fecaca;}
 
 /* 커스텀 컨펌 모달 (예쁘고 세련된 디자인) */
@@ -266,7 +268,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
 .radio-label input[type="radio"] {accent-color: #2563eb;}
 .add-event-footer {padding: 8px 14px; background: #f1f5f9; display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid #e2e8f0; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; flex-shrink: 0;}
 .btn-cancel {padding: 6px 12px; background: #ffffff; border: 1px solid #cbd5e1; color: #475569; border-radius: 5px; font-size: 0.76rem; font-weight: 600; cursor: pointer;}
-.btn-cancel:hover {background: #f1f5f9;}
+.btn-cancel:hover {background: #f8fafc;}
 .btn-submit {padding: 6px 14px; background: #2563eb; border: none; color: #ffffff; border-radius: 5px; font-size: 0.76rem; font-weight: 600; cursor: pointer;}
 .btn-submit:hover {background: #1d4ed8;}
 .btn-submit:disabled {background: #94a3b8; cursor: not-allowed;}
@@ -305,7 +307,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap" id="mainTitleText">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap" id="mainYearRangeText">(1994 - 2030)</span>
-        <span class="version">v2.2</span>
+        <span class="version">v2.3</span>
       </span>
     </h1>
     <button type="button" class="settings-open-btn" onclick="openSettingsModal()">⚙️ 설정</button>
@@ -346,9 +348,16 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
     <ul id="error-list" class="error-list"></ul>
   </div>
 
-  <!-- 범례 바 영역 -->
-  <div class="legend-bar-wrapper">
-    <div id="legendBar" class="legend-bar"></div>
+  <!-- v2.3: 메인 화면 범례 바 (공용 항목과 개인 항목 영역 분리 디스플레이) -->
+  <div class="legend-group-wrapper">
+    <div class="legend-row">
+      <span class="legend-row-title">공용 항목:</span>
+      <div id="publicLegendBar" class="legend-items-box"></div>
+    </div>
+    <div class="legend-row" style="border-top: 1px dashed #cbd5e1; padding-top: 6px;">
+      <span class="legend-row-title">개인 항목:</span>
+      <div id="personalLegendBar" class="legend-items-box"></div>
+    </div>
   </div>
 
   <!-- 캘린더 본문 테이블 -->
@@ -368,10 +377,10 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
   </div>
 </div>
 
-<!-- ⚙️ 설정 모달 (v2.2: v2.0 상단 고정 입력 복구 및 '설정 나가기' 버튼 반영) -->
+<!-- ⚙️ 설정 모달 (v2.3: 드래그 이동 기능, 높이 축소/자동 확장 리스트 적용) -->
 <div id="categoryManagerModal" class="modal-overlay">
-  <div class="modal-content" style="max-width: 540px;">
-    <div class="modal-header" style="background-color: #0f766e;">
+  <div id="settingsModalContent" class="modal-content" style="max-width: 540px;">
+    <div id="settingsModalHeader" class="modal-header" style="background-color: #0f766e;">
       <h2>⚙️ 설정</h2>
       <button type="button" class="modal-close-btn" onclick="closeCategoryManagerModal()">&times;</button>
     </div>
@@ -396,7 +405,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
         </div>
       </div>
 
-      <!-- 3. 공용 항목 관리 (v2.0 상단 고정 입력 및 커스텀 컨펌 삭제) -->
+      <!-- 3. 공용 항목 관리 -->
       <div class="settings-section">
         <h3>3. 공용 항목 관리 (공유 카테고리)</h3>
         <div style="font-size: 0.76rem; color: #475569;">항목명을 클릭하여 수정하거나 순서를 드래그하여 변경할 수 있습니다.</div>
@@ -408,7 +417,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
         <div id="categoryListContainer" class="category-list-container" ondragover="event.preventDefault()"></div>
       </div>
 
-      <!-- 4. 개인 항목 관리 (v2.0 상단 고정 입력 및 커스텀 컨펌 삭제) -->
+      <!-- 4. 개인 항목 관리 -->
       <div class="settings-section">
         <h3>4. 개인 항목 관리 (나만의 필터링)</h3>
         <div style="font-size: 0.76rem; color: #475569;">이 기기의 브라우저에만 저장되는 개인 전용 항목입니다.</div>
@@ -426,7 +435,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
   </div>
 </div>
 
-<!-- 🪟 커스텀 컨펌 모달 (예쁘고 세련된 예/아니오 확인 창) -->
+<!-- 🪟 커스텀 컨펌 모달 (예/아니오 확인 창) -->
 <div id="customConfirmModal" class="custom-confirm-overlay">
   <div class="custom-confirm-content">
     <div id="customConfirmHeader" class="custom-confirm-header">확인</div>
@@ -451,7 +460,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
 
 <!-- 일력(월간 캘린더) 모달 팝업 -->
 <div id="dayModal" class="modal-overlay">
-  <div class="modal-content">
+  <div class="modal-content" style="position: relative;">
     <div class="modal-header">
       <h2 id="modalTitle">0000년 0월 일력</h2>
       <button type="button" class="modal-close-btn" onclick="requestCloseDayModal()">&times;</button>
@@ -617,7 +626,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
 
 <!-- 대형 사진 뷰어 모달 -->
 <div id="photoModal" class="photo-modal-overlay">
-  <div class="photo-modal-content">
+  <div class="photo-modal-content" style="position: relative;">
     <div class="photo-modal-header">
       <span id="photoModalTitle" class="photo-modal-title">이벤트 사진 보기</span>
       <button type="button" class="photo-modal-close-btn" onclick="requestClosePhotoModal()">&times;</button>
@@ -640,17 +649,17 @@ const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0Xa
 const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v2.2: 커스텀 컨펌 모달 및 v2.0 상단 고정 입력 방식 구현 */
+/* v2.3: 설정창 드래그 이동, 항목 리스트 높이 축소/자동 확장, 공용/개인 범례 분리 디스플레이 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
   { name: '기념', color: '#f738f7', visible: true },
   { name: '여행', color: '#00b050', visible: true },
   { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v22';
-const LOCAL_STORAGE_KEY_PERSONAL_CATS = 'photoryalbum_personal_categories_v22';
-const LOCAL_STORAGE_KEY_CALENDAR_TITLE = 'photoryalbum_calendar_title_v22';
-const LOCAL_STORAGE_KEY_YEAR_RANGE = 'photoryalbum_year_range_v22';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v23';
+const LOCAL_STORAGE_KEY_PERSONAL_CATS = 'photoryalbum_personal_categories_v23';
+const LOCAL_STORAGE_KEY_CALENDAR_TITLE = 'photoryalbum_calendar_title_v23';
+const LOCAL_STORAGE_KEY_YEAR_RANGE = 'photoryalbum_year_range_v23';
 
 let globalCategoriesConfig = [];
 let globalPersonalCategoriesConfig = [];
@@ -716,6 +725,38 @@ function getCalendarTitleSetting() {
   return '홍병희 가족 캘린더';
 }
 
+/* 1. 설정 창 드래그 이동 기능 구현 */
+let isDraggingModal = false;
+let modalStartX = 0, modalStartY = 0;
+let modalInitialLeft = 0, modalInitialTop = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const headerElem = document.getElementById('settingsModalHeader');
+  const contentElem = document.getElementById('settingsModalContent');
+  if (headerElem && contentElem) {
+    headerElem.addEventListener('mousedown', (e) => {
+      isDraggingModal = true;
+      modalStartX = e.clientX;
+      modalStartY = e.clientY;
+      const rect = contentElem.getBoundingClientRect();
+      contentElem.style.position = 'absolute';
+      contentElem.style.left = rect.left + 'px';
+      contentElem.style.top = rect.top + 'px';
+      modalInitialLeft = rect.left;
+      modalInitialTop = rect.top;
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!isDraggingModal) return;
+      const dx = e.clientX - modalStartX;
+      const dy = e.clientY - modalStartY;
+      contentElem.style.left = (modalInitialLeft + dx) + 'px';
+      contentElem.style.top = (modalInitialTop + dy) + 'px';
+    });
+    document.addEventListener('mouseup', () => { isDraggingModal = false; });
+  }
+});
+
 /* 커스텀 컨펌 모달 헬퍼 */
 function showCustomConfirm(message, onYes, title = '확인') {
   const modal = document.getElementById('customConfirmModal');
@@ -739,14 +780,11 @@ function showCustomConfirm(message, onYes, title = '확인') {
   modal.style.display = 'flex';
 }
 
-/* 1. 캘린더 이름 변경 확인 절차 (커스텀 모달 활용 및 변경 없음 무반응) */
 function promptSaveCalendarTitle() {
   const titleVal = document.getElementById('inputCalendarTitle').value.trim();
   if (!titleVal) { alert('캘린더 이름을 입력해주세요.'); return; }
   const currentTitle = getCalendarTitleSetting();
-  if (titleVal === currentTitle) {
-    return; // 변경 없을 시 무반응
-  }
+  if (titleVal === currentTitle) { return; }
   showCustomConfirm(`캘린더 이름을 "${titleVal}"(으)로 변경할까요?`, () => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY_CALENDAR_TITLE, titleVal);
@@ -768,14 +806,11 @@ function applyCalendarTitleUI(title) {
 function getYearRangeSetting() {
   try {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEY_YEAR_RANGE);
-    if (stored) {
-      return JSON.parse(stored);
-    }
+    if (stored) { return JSON.parse(stored); }
   } catch(e) {}
   return { start: 1975, end: 2030 };
 }
 
-/* 2. 캘린더 연도 범위 설정 확인 절차 (커스텀 모달 활용 및 변경 없음 무반응) */
 function promptSaveYearRange() {
   const startInput = parseInt(document.getElementById('inputStartYear').value, 10);
   const endInput = parseInt(document.getElementById('inputEndYear').value, 10);
@@ -784,9 +819,7 @@ function promptSaveYearRange() {
     return;
   }
   const currentRange = getYearRangeSetting();
-  if (startInput === currentRange.start && endInput === currentRange.end) {
-    return; // 범위 변경 없으면 무반응
-  }
+  if (startInput === currentRange.start && endInput === currentRange.end) { return; }
   showCustomConfirm(`캘린더 연도 범위를 ${startInput} ~ ${endInput}년으로 변경할까요?`, () => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY_YEAR_RANGE, JSON.stringify({ start: startInput, end: endInput }));
@@ -861,9 +894,7 @@ function getSavedAdminCred() {
   } catch(e) { return null; }
 }
 function saveAdminCred(author, pw) {
-  try {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.adminCred, JSON.stringify({ author, pw }));
-  } catch(e) {}
+  try { localStorage.setItem(LOCAL_STORAGE_KEYS.adminCred, JSON.stringify({ author, pw })); } catch(e) {}
 }
 function clearAdminCred() {
   try { localStorage.removeItem(LOCAL_STORAGE_KEYS.adminCred); } catch(e) {}
@@ -1021,7 +1052,7 @@ function openSettingsModal() {
   document.getElementById('categoryManagerModal').style.display = 'flex';
 }
 
-/* 3. 공용 항목 관리 (v2.0 상단 고정 입력 및 커스텀 확인 창 삭제) */
+/* 3. 공용 항목 관리 (항목 수에 비례하여 높이 자동 확장 및 고정형 입력) */
 let draggedCategoryIndex = null;
 
 function renderCategoryManagerList() {
@@ -1034,7 +1065,7 @@ function renderCategoryManagerList() {
       <div class="category-item-row" draggable="true" ondragstart="handleCategoryDragStart(event, ${idx})" ondragover="handleCategoryDragOver(event, ${idx})" ondragleave="handleCategoryDragLeave(event)" ondrop="handleCategoryDrop(event, ${idx})">
         <div class="category-item-left">
           <span class="drag-handle" title="마우스로 순서 변경">☰</span>
-          <input type="color" value="${cat.color}" onchange="updateCategoryColor(${idx}, this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" title="색상 변경">
+          <input type="color" value="${cat.color}" onchange="updateCategoryColor(${idx}, this.value)" style="width:20px; height:20px; border:none; background:none; cursor:pointer;" title="색상 변경">
           <input type="text" class="category-name-input" value="${safeName}" onchange="updateCategoryName(${idx}, this.value)" placeholder="분류명 입력" title="클릭하여 이름 수정">
         </div>
         <button type="button" class="category-del-btn" onclick="promptDeleteCategory(${idx})">삭제</button>
@@ -1117,13 +1148,13 @@ function addNewCategory() {
   renderCategoryManagerList();
 }
 
-/* 4. 개인 항목 관리 (v2.0 상단 고정 입력 및 커스텀 확인 창 삭제) */
+/* 4. 개인 항목 관리 */
 function renderPersonalCategoryManagerList() {
   const pCats = getPersonalCategoriesConfig();
   const container = document.getElementById('personalCategoryListContainer');
   if (!container) return;
   if (pCats.length === 0) {
-    container.innerHTML = `<div style="font-size:0.74rem; color:#94a3b8; text-align:center; padding:8px 0;">등록된 개인 항목이 없습니다.</div>`;
+    container.innerHTML = `<div style="font-size:0.74rem; color:#94a3b8; text-align:center; padding:6px 0;">등록된 개인 항목이 없습니다.</div>`;
     return;
   }
   let html = '';
@@ -1132,7 +1163,7 @@ function renderPersonalCategoryManagerList() {
     html += `
       <div class="category-item-row">
         <div class="category-item-left">
-          <input type="color" value="${cat.color}" onchange="updatePersonalCategoryColor(${idx}, this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" title="색상 변경">
+          <input type="color" value="${cat.color}" onchange="updatePersonalCategoryColor(${idx}, this.value)" style="width:20px; height:20px; border:none; background:none; cursor:pointer;" title="색상 변경">
           <input type="text" class="category-name-input" value="${safeName}" onchange="updatePersonalCategoryName(${idx}, this.value)" placeholder="개인 항목명" title="이름 수정">
         </div>
         <button type="button" class="category-del-btn" onclick="promptDeletePersonalCategory(${idx})">삭제</button>
@@ -1181,23 +1212,40 @@ function addNewPersonalCategory() {
   renderPersonalCategoryManagerList();
 }
 
-/* 메인 화면 범례 바 (공용 + 개인 통합 체크박스 제어) */
+/* v2.3: 메인 화면 범례 바 (공용 항목과 개인 항목 영역을 별도 행으로 분리 디스플레이) */
 function renderLegendBar() {
-  const legendBar = document.getElementById('legendBar');
-  const allCats = getAllActiveCategories();
-  let html = '';
-  allCats.forEach((cat, idx) => {
+  const publicBar = document.getElementById('publicLegendBar');
+  const personalBar = document.getElementById('personalLegendBar');
+  
+  const publicCats = getCategoriesConfig();
+  let pubHtml = '';
+  publicCats.forEach((cat) => {
     const isChecked = cat.visible !== false ? 'checked' : '';
-    html += `
+    pubHtml += `
       <div class="legend-item">
-        <label style="display: inline-flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; font-weight: 600; color: #1e293b;">
+        <label style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; font-weight: 600; color: #1e293b;">
           <input type="checkbox" ${isChecked} onchange="toggleCategoryVisibleGlobal('${cat.name}', this.checked)" style="accent-color: ${cat.color}; width: 14px; height: 14px; cursor: pointer;">
           <span style="color: ${cat.color};">${cat.name}</span>
         </label>
       </div>
     `;
   });
-  legendBar.innerHTML = html;
+  publicBar.innerHTML = pubHtml || '<span style="font-size:0.75rem; color:#94a3b8;">공용 항목 없음</span>';
+
+  const personalCats = getPersonalCategoriesConfig();
+  let perHtml = '';
+  personalCats.forEach((cat) => {
+    const isChecked = cat.visible !== false ? 'checked' : '';
+    perHtml += `
+      <div class="legend-item">
+        <label style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; font-weight: 600; color: #1e293b;">
+          <input type="checkbox" ${isChecked} onchange="toggleCategoryVisibleGlobal('${cat.name}', this.checked)" style="accent-color: ${cat.color}; width: 14px; height: 14px; cursor: pointer;">
+          <span style="color: ${cat.color};">${cat.name}</span>
+        </label>
+      </div>
+    `;
+  });
+  personalBar.innerHTML = perHtml || '<span style="font-size:0.75rem; color:#94a3b8;">등록된 개인 항목이 없습니다. (설정에서 추가하세요)</span>';
 }
 
 function toggleCategoryVisibleGlobal(catName, visible) {
