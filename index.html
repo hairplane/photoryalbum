@@ -1,4 +1,4 @@
-<!-- v1.3: 네이버 메모 스타일 분류 관리창 및 중요 태그 분리 적용 -->
+<!-- v1.4: 구글 시트 category 탭 연동, 기본 분류 개편(행사, 기념, 여행, 미팅), 분류 항목 드래그 앤 드롭 정렬 적용 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -14,10 +14,6 @@ h1 {font-size: 1.5rem; color: #2c3e50; line-height: 1.35;}
 .title-wrap {display: inline-block;}
 @media (max-width: 768px) {h1 {font-size: 1.35rem;} .title-break {display: block; margin-top: 3px;}}
 h1 .version {font-size: 0.75rem; color: #2563eb; background: #dbeafe; padding: 2px 5px; border-radius: 4px; vertical-align: middle; margin-left: 4px;}
-
-/* 분류 관리 설정 버튼 스타일 */
-.category-manager-open-btn {position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: #f1f3f5; color: #495057; border: 1px solid #ced4da; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s ease;}
-.category-manager-open-btn:hover {background: #e2e8f0; border-color: #adb5bd;}
 
 /* 오류 안내 박스 */
 .error-box {border: 1px solid #f5c6cb; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 0.75rem; color: #721c24; background-color: #f8d7da;}
@@ -58,9 +54,14 @@ h1 .version {font-size: 0.75rem; color: #2563eb; background: #dbeafe; padding: 2
 .strip-card-date {font-size: 0.62rem; color: #475569; font-weight: 600; margin-top: 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;}
 .strip-card-title {font-size: 0.58rem; color: #0f172a; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;}
 
-/* 범례 바 */
-.legend-bar {display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 16px; background: #f1f3f5; border: 1px solid #e1e4e8; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; font-size: 0.85rem; font-weight: 600;}
+/* 범례 바 영역 (분류 관리 버튼 포함 - 매트릭스 상단) */
+.legend-bar-wrapper {display: flex; justify-content: space-between; align-items: center; background: #f1f3f5; border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;}
+.legend-bar {display: flex; align-items: center; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; font-weight: 600;}
 .legend-item {display: flex; align-items: center; gap: 4px;}
+
+/* 분류 관리 설정 버튼 스타일 */
+.category-manager-open-btn {background: #ffffff; color: #495057; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s ease; flex-shrink: 0;}
+.category-manager-open-btn:hover {background: #e2e8f0; border-color: #adb5bd;}
 
 /* 테이블 영역 */
 .table-container {width: 100%; overflow-x: visible;}
@@ -98,7 +99,7 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .modal-close-btn:hover {background-color: rgba(255, 255, 255, 0.2);}
 .modal-body {padding: 10px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;}
 
-/* 분류 관리창(네이버 메모 폴더 스타일) 모달 내부 스타일 */
+/* 분류 관리창 (드래그 앤 드롭 정렬 지원) */
 .category-manager-body {display: flex; flex-direction: column; gap: 12px; font-size: 0.8rem;}
 .category-add-row {display: flex; gap: 8px; align-items: center;}
 .category-add-row input[type="text"] {flex: 1; height: 32px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; outline: none;}
@@ -106,9 +107,11 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .category-add-row button {height: 32px; padding: 0 14px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
 .category-add-row button:hover {background: #1d4ed8;}
 .category-list-container {display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #f8fafc;}
-.category-item-row {display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; gap: 8px;}
+.category-item-row {display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; gap: 8px; cursor: grab; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;}
+.category-item-row:active {cursor: grabbing;}
+.category-item-row.dragging {opacity: 0.4; background: #f1f5f9; border: 2px dashed #3b82f6;}
 .category-item-left {display: flex; align-items: center; gap: 8px; flex: 1;}
-.category-color-dot {width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0;}
+.drag-handle {color: #94a3b8; font-weight: bold; font-size: 1rem; cursor: grab; padding: 0 2px;}
 .category-item-name {font-weight: 600; color: #1e293b; font-size: 0.82rem;}
 .category-item-right {display: flex; align-items: center; gap: 8px;}
 .category-toggle-label {display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #475569; cursor: pointer; user-select: none;}
@@ -287,10 +290,9 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap">(1994 - 2030)</span>
-        <span class="version">v1.3</span>
+        <span class="version">v1.4</span>
       </span>
     </h1>
-    <button type="button" class="category-manager-open-btn" onclick="openCategoryManagerModal()">📁 분류 항목 관리</button>
   </header>
 
   <!-- 검색창 그룹 -->
@@ -332,12 +334,16 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <ul>
         <li><strong>이벤트DB 시트:</strong> A(일자), B(순번), C(분류), D(행사명), E(장소), F(비고), G(참석자)</li>
         <li><strong>사진DB 시트:</strong> A(파일명), B(File ID), C(미리보기), D(날짜), E(순번), F(행사명), G(장소), H(비고), I(참석자)</li>
+        <li><strong>분류DB 시트(category):</strong> A(분류명), B(색상코드), C(보이기여부)</li>
       </ul>
     </div>
   </div>
 
-  <!-- 범례 바 (동적 렌더링) -->
-  <div id="legendBar" class="legend-bar"></div>
+  <!-- 범례 바 및 분류 관리 버튼 영역 (캘린더 매트릭스 상단) -->
+  <div class="legend-bar-wrapper">
+    <div id="legendBar" class="legend-bar"></div>
+    <button type="button" class="category-manager-open-btn" onclick="openCategoryManagerModal()">📁 분류 항목 관리</button>
+  </div>
 
   <!-- 캘린더 본문 테이블 -->
   <div class="table-container">
@@ -356,23 +362,23 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
   </div>
 </div>
 
-<!-- 📁 분류 항목 관리 모달 (네이버 메모 폴더 스타일) -->
+<!-- 📁 분류 항목 관리 모달 (드래그 앤 드롭 정렬 지원) -->
 <div id="categoryManagerModal" class="modal-overlay">
   <div class="modal-content" style="max-width: 480px;">
     <div class="modal-header" style="background-color: #0f766e;">
-      <h2>📁 분류 항목 관리 (폴더 스타일)</h2>
+      <h2>📁 분류 항목 관리</h2>
       <button type="button" class="modal-close-btn" onclick="closeCategoryManagerModal()">&times;</button>
     </div>
     <div class="modal-body">
       <div style="font-size: 0.78rem; color: #475569; line-height: 1.4;">
-        캘린더에서 사용할 분류 항목을 자유롭게 추가, 삭제하거나 화면 보이기/숨김(토글) 처리할 수 있습니다.
+        항목을 마우스나 터치로 끌어서 순서를 변경할 수 있습니다. (추가·삭제·숨김 설정 포함)
       </div>
       <div class="category-add-row">
-        <input type="text" id="newCategoryNameInput" placeholder="새 분류명 입력 (예: 여행, 모임)" autocomplete="off">
+        <input type="text" id="newCategoryNameInput" placeholder="새 분류명 입력 (예: 회의, 모임)" autocomplete="off">
         <input type="color" id="newCategoryColorInput" value="#0284c7" title="분류 색상 선택">
         <button type="button" onclick="addNewCategory()">추가</button>
       </div>
-      <div id="categoryListContainer" class="category-list-container"></div>
+      <div id="categoryListContainer" class="category-list-container" ondragover="event.preventDefault()"></div>
     </div>
     <div class="add-event-footer">
       <button type="button" class="btn-submit" onclick="closeCategoryManagerModal()" style="background-color: #0f766e; flex: 1;">확인 및 저장</button>
@@ -452,7 +458,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
         <div id="newCategoryRadioGroup" class="radio-group"></div>
       </div>
 
-      <!-- 중요 태그 체크박스 (v1.3 신설) -->
+      <!-- 중요 태그 체크박스 -->
       <div class="form-field">
         <label class="important-check-label">
           <input type="checkbox" id="chkNewImportant"> ★ 중요 일정으로 표시하기 (별표 마크)
@@ -579,19 +585,24 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
 <script>
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=0&single=true&output=csv';
 const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0XaTAnxMjvbFKg8GRdMytfgsNWltOD67BiBPg02PYGh5ndC1vmb2jP6nvMHzy5cGWI0wiy_e4/pub?gid=0&single=true&output=csv';
+const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v1.3: 네이버 메모 폴더 스타일 동적 분류 및 가시성 관리 구조 */
+/* v1.4: 디폴트 분류 항목 (행사, 기념, 여행, 미팅) 및 구글 시트 category 탭 연동 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
-  { name: '결혼', color: '#f738f7', visible: true },
-  { name: '부고', color: '#111111', visible: true },
-  { name: '기타', color: '#00b050', visible: true },
-  { name: '생일', color: '#f59e0b', visible: true }
+  { name: '기념', color: '#f738f7', visible: true },
+  { name: '여행', color: '#00b050', visible: true },
+  { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v13';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v14';
+
+let globalCategoriesConfig = [];
 
 function getCategoriesConfig() {
+  if (globalCategoriesConfig && globalCategoriesConfig.length > 0) {
+    return globalCategoriesConfig;
+  }
   try {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEY_CATEGORIES);
     if (stored) {
@@ -602,6 +613,7 @@ function getCategoriesConfig() {
 }
 
 function saveCategoriesConfig(cats) {
+  globalCategoriesConfig = cats;
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY_CATEGORIES, JSON.stringify(cats));
   } catch(e) {}
@@ -826,14 +838,18 @@ function openCategoryManagerModal() {
   document.getElementById('categoryManagerModal').style.display = 'flex';
 }
 
+/* 분류 관리창 드래그 앤 드롭 정렬 (네이버 메모 스타일) */
+let draggedCategoryIndex = null;
+
 function renderCategoryManagerList() {
   const cats = getCategoriesConfig();
   const container = document.getElementById('categoryListContainer');
   let html = '';
   cats.forEach((cat, idx) => {
     html += `
-      <div class="category-item-row">
+      <div class="category-item-row" draggable="true" ondragstart="handleCategoryDragStart(event, ${idx})" ondragover="handleCategoryDragOver(event, ${idx})" ondragleave="handleCategoryDragLeave(event)" ondrop="handleCategoryDrop(event, ${idx})" ontouchstart="handleTouchStart(event, ${idx})" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
         <div class="category-item-left">
+          <span class="drag-handle" title="마우스나 터치로 순서 변경">☰</span>
           <input type="color" value="${cat.color}" onchange="updateCategoryColor(${idx}, this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" title="색상 변경">
           <span class="category-item-name">${cat.name}</span>
         </div>
@@ -847,6 +863,65 @@ function renderCategoryManagerList() {
     `;
   });
   container.innerHTML = html;
+}
+
+function handleCategoryDragStart(e, index) {
+  draggedCategoryIndex = index;
+  e.target.classList.add('dragging');
+}
+
+function handleCategoryDragOver(e, index) {
+  e.preventDefault();
+  const container = document.getElementById('categoryListContainer');
+  const rows = Array.from(container.querySelectorAll('.category-item-row'));
+  const targetRow = rows[index];
+  const draggingRow = rows[draggedCategoryIndex];
+  if (targetRow && draggingRow && targetRow !== draggingRow) {
+    const rect = targetRow.getBoundingClientRect();
+    const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+    container.insertBefore(draggingRow, next && targetRow.nextSibling || targetRow);
+  }
+}
+
+function handleCategoryDragLeave(e) {
+  e.target.classList.remove('dragging');
+}
+
+function handleCategoryDrop(e, index) {
+  e.preventDefault();
+  const container = document.getElementById('categoryListContainer');
+  const rows = Array.from(container.querySelectorAll('.category-item-row'));
+  let newCats = [];
+  rows.forEach(row => {
+    const name = row.querySelector('.category-item-name').textContent;
+    const color = row.querySelector('input[type="color"]').value;
+    const visible = row.querySelector('input[type="checkbox"]').checked;
+    newCats.push({ name, color, visible });
+  });
+  saveCategoriesConfig(newCats);
+  renderCategoryManagerList();
+}
+
+let touchDraggedIndex = null;
+function handleTouchStart(e, index) { touchDraggedIndex = index; }
+function handleTouchMove(e) { e.preventDefault(); }
+function handleTouchEnd(e) {
+  const touch = e.changedTouches[0];
+  const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
+  const targetRow = targetElem ? targetElem.closest('.category-item-row') : null;
+  if (targetRow) {
+    const container = document.getElementById('categoryListContainer');
+    const rows = Array.from(container.querySelectorAll('.category-item-row'));
+    const targetIndex = rows.indexOf(targetRow);
+    if (touchDraggedIndex !== null && targetIndex !== -1 && touchDraggedIndex !== targetIndex) {
+      let cats = getCategoriesConfig();
+      const movedItem = cats.splice(touchDraggedIndex, 1)[0];
+      cats.splice(targetIndex, 0, movedItem);
+      saveCategoriesConfig(cats);
+      renderCategoryManagerList();
+    }
+  }
+  touchDraggedIndex = null;
 }
 
 function addNewCategory() {
@@ -1925,6 +2000,25 @@ function parsePhotoDB(csvText) {
   globalPhotoList = photoList;
 }
 
+function parseCategoryDB(csvText) {
+  const rows = parseCSV(csvText);
+  const sheetCats = [];
+  for (let i = 1; i < rows.length; i++) {
+    const cols = rows[i].map(c => c.trim());
+    const name = cols[0];
+    const color = cols[1] || '#0066ff';
+    const visibleStr = cols[2];
+    if (!name) continue;
+    const visible = (visibleStr !== 'false' && visibleStr !== '0' && visibleStr !== '숨김');
+    sheetCats.push({ name, color, visible });
+  }
+  if (sheetCats.length > 0) {
+    globalCategoriesConfig = sheetCats;
+  } else {
+    globalCategoriesConfig = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+  }
+}
+
 function renderCalendarTable() {
   renderLegendBar();
   const tbody = document.getElementById('calendar-body');
@@ -2049,8 +2143,19 @@ function parseAndRenderCalendar(csvText) {
 
 async function loadCalendarAndPhotoData() {
   try {
-    const [eventRes, photoRes] = await Promise.all([fetch(csvUrl), fetch(photoDbCsvUrl)]);
-    const [eventText, photoText] = await Promise.all([eventRes.text(), photoRes.text()]);
+    const [eventRes, photoRes, categoryRes] = await Promise.all([
+      fetch(csvUrl),
+      fetch(photoDbCsvUrl),
+      fetch(categoryCsvUrl).catch(() => null)
+    ]);
+    const eventText = await eventRes.text();
+    const photoText = await photoRes.text();
+    if (categoryRes && categoryRes.ok) {
+      const categoryText = await categoryRes.text();
+      parseCategoryDB(categoryText);
+    } else {
+      globalCategoriesConfig = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+    }
     parsePhotoDB(photoText);
     parseAndRenderCalendar(eventText);
   } catch (error) {
