@@ -1,4 +1,4 @@
-<!-- v2.0: 설정(⚙️) 버튼 헤더 타이틀 수직 중앙선 정렬 및 내부 텍스트 완벽 센터링, 4대 설정 체계(캘린더 이름 변경, 연도 범위 설정, 공용 분류 항목 관리, 로컬스토리지 기반 개인 항목 관리) 전면 도입 -->
+<!-- v2.1: 캘린더 이름 및 연도 범위 변경 시 '변경할까요?' 컨펌(예/아니오) 확인 체계 도입, 공용 및 개인 항목 관리 시 삭제 전 안전 확인 절차 및 모바일 구글 킵 스타일('+')의 최하단 동적 추가 입력 방식 적용 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -10,14 +10,14 @@
 body {font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.4; padding: 8px; word-break: keep-all;}
 .container {width: 100%; max-width: 1200px; margin: 0 auto; background: #ffffff; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);}
 
-/* 헤더 영역 및 완벽한 수직 중앙 정렬 (v2.0) */
+/* 헤더 영역 및 수직 중앙 정렬 */
 header {margin-bottom: 12px; border-bottom: 2px solid #eaeaea; padding: 4px 0 10px 0; text-align: center; position: relative; display: flex; justify-content: center; align-items: center; min-height: 48px;}
 h1 {font-size: 1.5rem; color: #2c3e50; line-height: 1.35; margin: 0 auto;}
 .title-wrap {display: inline-block;}
 @media (max-width: 768px) {header {flex-direction: column; gap: 8px; min-height: auto;} h1 {font-size: 1.35rem;} .title-break {display: block; margin-top: 3px;}}
 h1 .version {font-size: 0.75rem; color: #2563eb; background: #dbeafe; padding: 2px 5px; border-radius: 4px; vertical-align: middle; margin-left: 4px;}
 
-/* 헤더 우측 설정 버튼 스타일 및 내부 완벽 센터링 (v2.0) */
+/* 헤더 우측 설정 버튼 스타일 및 내부 완벽 센터링 */
 .settings-open-btn {position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: #ffffff; color: #495057; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s ease; line-height: 1;}
 .settings-open-btn:hover {background: #e2e8f0; border-color: #adb5bd;}
 @media (max-width: 768px) {.settings-open-btn {position: static; transform: none; align-self: flex-end;}}
@@ -88,7 +88,7 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 
 /* 모달 공통 스타일 */
 .modal-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center; padding: 8px;}
-.modal-content {background: #ffffff; width: 100%; max-width: 740px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; animation: modalFadeIn 0.2s ease-out;}
+.modal-content {background: #ffffff; width: 100%; max-width: 540px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; animation: modalFadeIn 0.2s ease-out;}
 @keyframes modalFadeIn {from {opacity: 0; transform: translateY(-10px);} to {opacity: 1; transform: translateY(0);}}
 .modal-header {display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background-color: #2c3e50; color: #ffffff;}
 .modal-header h2 {font-size: 1.1rem; margin: 0; font-weight: 600;}
@@ -96,7 +96,7 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .modal-close-btn:hover {background-color: rgba(255, 255, 255, 0.2);}
 .modal-body {padding: 14px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;}
 
-/* 설정 창 탭 메뉴 및 섹션 스타일 (v2.0) */
+/* 설정 창 섹션 스타일 */
 .settings-section {display: flex; flex-direction: column; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;}
 .settings-section h3 {font-size: 0.9rem; color: #0f766e; margin: 0; font-weight: 700; display: flex; align-items: center; gap: 6px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 6px;}
 .settings-row {display: flex; gap: 8px; align-items: center; font-size: 0.8rem;}
@@ -104,12 +104,7 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .settings-row button {height: 32px; padding: 0 14px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
 .settings-row button:hover {background: #1d4ed8;}
 
-/* 분류 항목 관리 스타일 */
-.category-add-row {display: flex; gap: 8px; align-items: center;}
-.category-add-row input[type="text"] {flex: 1; height: 32px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; outline: none; background: #ffffff;}
-.category-add-row input[type="color"] {width: 36px; height: 32px; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; padding: 2px;}
-.category-add-row button {height: 32px; padding: 0 14px; background: #0f766e; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;}
-.category-add-row button:hover {background: #115e59;}
+/* 모바일 킵 스타일의 최하단 '+' 신규 입력 바 스타일 (v2.1) */
 .category-list-container {display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #ffffff;}
 .category-item-row {display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; gap: 8px; cursor: grab; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;}
 .category-item-row:active {cursor: grabbing;}
@@ -120,6 +115,12 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .category-name-input:focus {border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);}
 .category-del-btn {background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; padding: 2px 6px; font-size: 0.72rem; cursor: pointer; font-weight: 600;}
 .category-del-btn:hover {background: #fecaca;}
+
+/* 킵 스타일 최하단 추가 바 */
+.keep-add-bar {display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 6px; padding: 6px 10px; margin-top: 4px; cursor: pointer; transition: all 0.2s ease;}
+.keep-add-bar:hover {border-color: #0f766e; background: #f0fdf4;}
+.keep-add-plus {font-size: 1.1rem; font-weight: bold; color: #0f766e; width: 24px; text-align: center;}
+.keep-add-input {flex: 1; border: none; outline: none; font-size: 0.82rem; background: transparent; color: #334155;}
 
 /* 일력 모달 그리드 */
 .day-calendar-grid {display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; width: 100%;}
@@ -293,7 +294,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap" id="mainTitleText">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap" id="mainYearRangeText">(1994 - 2030)</span>
-        <span class="version">v2.0</span>
+        <span class="version">v2.1</span>
       </span>
     </h1>
     <button type="button" class="settings-open-btn" onclick="openSettingsModal()">⚙️ 설정</button>
@@ -334,7 +335,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
     <ul id="error-list" class="error-list"></ul>
   </div>
 
-  <!-- 범례 바 영역 (공용 및 개인 분류 통합 디스플레이) -->
+  <!-- 범례 바 영역 -->
   <div class="legend-bar-wrapper">
     <div id="legendBar" class="legend-bar"></div>
   </div>
@@ -356,9 +357,9 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
   </div>
 </div>
 
-<!-- ⚙️ 설정 모달 (4대 핵심 설정 허브 체계 도입) -->
+<!-- ⚙️ 설정 모달 (v2.1 확인 체계 및 킵 스타일 '+' 입력 방식 반영) -->
 <div id="categoryManagerModal" class="modal-overlay">
-  <div class="modal-content" style="max-width: 520px;">
+  <div class="modal-content" style="max-width: 540px;">
     <div class="modal-header" style="background-color: #0f766e;">
       <h2>⚙️ 설정</h2>
       <button type="button" class="modal-close-btn" onclick="closeCategoryManagerModal()">&times;</button>
@@ -369,7 +370,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
         <h3>1. 캘린더 이름 변경</h3>
         <div class="settings-row">
           <input type="text" id="inputCalendarTitle" placeholder="캘린더 이름을 입력하세요" autocomplete="off">
-          <button type="button" onclick="saveCalendarTitleSetting()">저장</button>
+          <button type="button" onclick="promptSaveCalendarTitle()">변경</button>
         </div>
       </div>
 
@@ -380,31 +381,21 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
           <input type="number" id="inputStartYear" placeholder="시작 연도 (예: 1994)" min="1975" max="2050">
           <span style="font-weight: bold; color: #64748b;">~</span>
           <input type="number" id="inputEndYear" placeholder="종료 연도 (예: 2030)" min="1975" max="2050">
-          <button type="button" onclick="saveYearRangeSetting()">적용</button>
+          <button type="button" onclick="promptSaveYearRange()">변경</button>
         </div>
       </div>
 
-      <!-- 3. 공용 항목 관리 (분류 항목 관리) -->
+      <!-- 3. 공용 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) -->
       <div class="settings-section">
         <h3>3. 공용 항목 관리 (공유 카테고리)</h3>
         <div style="font-size: 0.76rem; color: #475569;">항목명을 클릭하여 수정하거나 순서를 드래그하여 변경할 수 있습니다.</div>
-        <div class="category-add-row" style="margin-top: 4px;">
-          <input type="text" id="newCategoryNameInput" placeholder="새 공용 분류명 입력" autocomplete="off">
-          <input type="color" id="newCategoryColorInput" value="#0284c7" title="분류 색상 선택">
-          <button type="button" onclick="addNewCategory()">추가</button>
-        </div>
         <div id="categoryListContainer" class="category-list-container" ondragover="event.preventDefault()"></div>
       </div>
 
-      <!-- 4. 개인 항목 관리 (로컬스토리지 저장) -->
+      <!-- 4. 개인 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) -->
       <div class="settings-section">
         <h3>4. 개인 항목 관리 (나만의 필터링)</h3>
         <div style="font-size: 0.76rem; color: #475569;">이 기기의 브라우저에만 저장되는 개인 전용 항목입니다.</div>
-        <div class="category-add-row" style="margin-top: 4px;">
-          <input type="text" id="newPersonalCategoryNameInput" placeholder="새 개인 항목명 입력" autocomplete="off">
-          <input type="color" id="newPersonalCategoryColorInput" value="#10b981" title="개인 항목 색상 선택">
-          <button type="button" onclick="addNewPersonalCategory()">추가</button>
-        </div>
         <div id="personalCategoryListContainer" class="category-list-container"></div>
       </div>
     </div>
@@ -616,17 +607,17 @@ const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0Xa
 const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v2.0: 4대 설정 체계 및 개인/공용 항목 분리 관리 데이터 구조 */
+/* v2.1: 캘린더 이름/연도 변경 컨펌 체계 및 킵 스타일 '+' 입력 방식 구현 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
   { name: '기념', color: '#f738f7', visible: true },
   { name: '여행', color: '#00b050', visible: true },
   { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v20';
-const LOCAL_STORAGE_KEY_PERSONAL_CATS = 'photoryalbum_personal_categories_v20';
-const LOCAL_STORAGE_KEY_CALENDAR_TITLE = 'photoryalbum_calendar_title_v20';
-const LOCAL_STORAGE_KEY_YEAR_RANGE = 'photoryalbum_year_range_v20';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v21';
+const LOCAL_STORAGE_KEY_PERSONAL_CATS = 'photoryalbum_personal_categories_v21';
+const LOCAL_STORAGE_KEY_CALENDAR_TITLE = 'photoryalbum_calendar_title_v21';
+const LOCAL_STORAGE_KEY_YEAR_RANGE = 'photoryalbum_year_range_v21';
 
 let globalCategoriesConfig = [];
 let globalPersonalCategoriesConfig = [];
@@ -692,11 +683,23 @@ function getCalendarTitleSetting() {
   return '홍병희 가족 캘린더';
 }
 
-function saveCalendarTitleSetting(title) {
+/* 1. 캘린더 이름 변경 확인 절차 (변경할까요? 예/아니오 및 변경 없음 무반응) */
+function promptSaveCalendarTitle() {
+  const titleVal = document.getElementById('inputCalendarTitle').value.trim();
+  if (!titleVal) { alert('캘린더 이름을 입력해주세요.'); return; }
+  const currentTitle = getCalendarTitleSetting();
+  if (titleVal === currentTitle) {
+    return; // 명칭 변경이 없으면 아무런 이벤트 발생 안 함
+  }
+  if (confirm(`캘린더 이름을 "${titleVal}"(으)로 변경할까요?`)) {
+    saveCalendarTitleSettingAction(titleVal);
+  }
+}
+
+function saveCalendarTitleSettingAction(title) {
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY_CALENDAR_TITLE, title);
     applyCalendarTitleUI(title);
-    alert('캘린더 이름이 변경되었습니다.');
   } catch(e) {}
 }
 
@@ -720,19 +723,25 @@ function getYearRangeSetting() {
   return { start: 1975, end: 2030 };
 }
 
-function saveYearRangeSetting() {
+/* 2. 캘린더 연도 범위 설정 확인 절차 (변경할까요? 예/아니오 및 변경 없음 무반응) */
+function promptSaveYearRange() {
   const startInput = parseInt(document.getElementById('inputStartYear').value, 10);
   const endInput = parseInt(document.getElementById('inputEndYear').value, 10);
   if (isNaN(startInput) || isNaN(endInput) || startInput > endInput) {
     alert('올바른 연도 범위를 입력해주세요. (시작 연도가 종료 연도보다 클 수 없습니다)');
     return;
   }
-  try {
-    localStorage.setItem(LOCAL_STORAGE_KEY_YEAR_RANGE, JSON.stringify({ start: startInput, end: endInput }));
-    applyYearRangeUI(startInput, endInput);
-    renderCalendarTable();
-    alert('연도 범위가 설정되었습니다.');
-  } catch(e) {}
+  const currentRange = getYearRangeSetting();
+  if (startInput === currentRange.start && endInput === currentRange.end) {
+    return; // 범위 변경이 없으면 무반응
+  }
+  if (confirm(`캘린더 연도 범위를 ${startInput} ~ ${endInput}년으로 변경할까요?`)) {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_YEAR_RANGE, JSON.stringify({ start: startInput, end: endInput }));
+      applyYearRangeUI(startInput, endInput);
+      renderCalendarTable();
+    } catch(e) {}
+  }
 }
 
 function applyYearRangeUI(start, end) {
@@ -957,21 +966,7 @@ function openSettingsModal() {
   document.getElementById('categoryManagerModal').style.display = 'flex';
 }
 
-function saveCalendarTitleSetting() {
-  const titleVal = document.getElementById('inputCalendarTitle').value.trim();
-  if (!titleVal) { alert('캘린더 이름을 입력해주세요.'); return; }
-  saveCalendarTitleSettingAction(titleVal);
-}
-
-function saveCalendarTitleSettingAction(title) {
-  try {
-    localStorage.setItem(LOCAL_STORAGE_KEY_CALENDAR_TITLE, title);
-    applyCalendarTitleUI(title);
-    alert('캘린더 이름이 변경되었습니다.');
-  } catch(e) {}
-}
-
-/* 3. 공용 항목 관리 (인라인 수정 및 드래그 정렬) */
+/* 3. 공용 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) */
 let draggedCategoryIndex = null;
 
 function renderCategoryManagerList() {
@@ -987,11 +982,35 @@ function renderCategoryManagerList() {
           <input type="color" value="${cat.color}" onchange="updateCategoryColor(${idx}, this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" title="색상 변경">
           <input type="text" class="category-name-input" value="${safeName}" onchange="updateCategoryName(${idx}, this.value)" placeholder="분류명 입력" title="클릭하여 이름 수정">
         </div>
-        <button type="button" class="category-del-btn" onclick="deleteCategory(${idx})">삭제</button>
+        <button type="button" class="category-del-btn" onclick="promptDeleteCategory(${idx})">삭제</button>
       </div>
     `;
   });
+  // 모바일 구글 킵 스타일의 최하단 '+' 입력 바 추가
+  html += `
+    <div class="keep-add-bar" onclick="focusKeepAddInput('keepNewCatInput')">
+      <span class="keep-add-plus">+</span>
+      <input type="text" id="keepNewCatInput" class="keep-add-input" placeholder="새 공용 분류 항목 추가..." autocomplete="off" onkeydown="handleKeepAddKeyDown(event, 'category')">
+      <input type="color" id="keepNewCatColor" value="#0284c7" title="색상 선택" style="width:22px; height:22px; border:none; background:none; cursor:pointer;" onclick="event.stopPropagation()">
+    </div>
+  `;
   container.innerHTML = html;
+}
+
+function focusKeepAddInput(inputId) {
+  const input = document.getElementById(inputId);
+  if (input) input.focus();
+}
+
+function handleKeepAddKeyDown(event, type) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    if (type === 'category') {
+      addNewCategoryFromKeep();
+    } else if (type === 'personal') {
+      addNewPersonalCategoryFromKeep();
+    }
+  }
 }
 
 function handleCategoryDragStart(e, index) {
@@ -1041,38 +1060,36 @@ function updateCategoryColor(index, color) {
   if (cats[index]) { cats[index].color = color; saveCategoriesConfig(cats); }
 }
 
-function deleteCategory(index) {
+function promptDeleteCategory(index) {
   let cats = getCategoriesConfig();
   if (cats.length <= 1) { alert('최소 1개 이상의 공용 분류 항목이 필요합니다.'); return; }
-  cats.splice(index, 1);
-  saveCategoriesConfig(cats);
-  renderCategoryManagerList();
+  const targetName = cats[index].name;
+  if (confirm(`"${targetName}" 공용 항목을 정말 삭제하시겠습니까?`)) {
+    cats.splice(index, 1);
+    saveCategoriesConfig(cats);
+    renderCategoryManagerList();
+  }
 }
 
-function addNewCategory() {
+function addNewCategoryFromKeep() {
   syncCategoriesFromDOM();
-  const nameInput = document.getElementById('newCategoryNameInput');
-  const colorInput = document.getElementById('newCategoryColorInput');
+  const nameInput = document.getElementById('keepNewCatInput');
+  const colorInput = document.getElementById('keepNewCatColor');
   const name = nameInput.value.trim();
   const color = colorInput.value;
-  if (!name) { alert('공용 분류명을 입력해주세요.'); return; }
+  if (!name) return;
   let cats = getCategoriesConfig();
   if (cats.some(c => c.name === name)) { alert('이미 존재하는 분류명입니다.'); return; }
   cats.push({ name: name, color: color, visible: true });
   saveCategoriesConfig(cats);
-  nameInput.value = '';
   renderCategoryManagerList();
 }
 
-/* 4. 개인 항목 관리 (로컬스토리지 전용) */
+/* 5. 개인 항목 관리 (킵 스타일 '+' 입력 및 삭제 확인) */
 function renderPersonalCategoryManagerList() {
   const pCats = getPersonalCategoriesConfig();
   const container = document.getElementById('personalCategoryListContainer');
   if (!container) return;
-  if (pCats.length === 0) {
-    container.innerHTML = `<div style="font-size:0.74rem; color:#94a3b8; text-align:center; padding:8px 0;">등록된 개인 항목이 없습니다.</div>`;
-    return;
-  }
   let html = '';
   pCats.forEach((cat, idx) => {
     const safeName = cat.name.replace(/"/g, '&quot;');
@@ -1082,10 +1099,18 @@ function renderPersonalCategoryManagerList() {
           <input type="color" value="${cat.color}" onchange="updatePersonalCategoryColor(${idx}, this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" title="색상 변경">
           <input type="text" class="category-name-input" value="${safeName}" onchange="updatePersonalCategoryName(${idx}, this.value)" placeholder="개인 항목명" title="이름 수정">
         </div>
-        <button type="button" class="category-del-btn" onclick="deletePersonalCategory(${idx})">삭제</button>
+        <button type="button" class="category-del-btn" onclick="promptDeletePersonalCategory(${idx})">삭제</button>
       </div>
     `;
   });
+  // 개인 항목 킵 스타일 최하단 추가 바
+  html += `
+    <div class="keep-add-bar" onclick="focusKeepAddInput('keepNewPerInput')">
+      <span class="keep-add-plus">+</span>
+      <input type="text" id="keepNewPerInput" class="keep-add-input" placeholder="새 개인 항목 추가..." autocomplete="off" onkeydown="handleKeepAddKeyDown(event, 'personal')">
+      <input type="color" id="keepNewPerColor" value="#10b981" title="색상 선택" style="width:22px; height:22px; border:none; background:none; cursor:pointer;" onclick="event.stopPropagation()">
+    </div>
+  `;
   container.innerHTML = html;
 }
 
@@ -1102,26 +1127,28 @@ function updatePersonalCategoryColor(index, color) {
   if (pCats[index]) { pCats[index].color = color; savePersonalCategoriesConfig(pCats); }
 }
 
-function deletePersonalCategory(index) {
+function promptDeletePersonalCategory(index) {
   let pCats = getPersonalCategoriesConfig();
-  pCats.splice(index, 1);
-  savePersonalCategoriesConfig(pCats);
-  renderPersonalCategoryManagerList();
+  const targetName = pCats[index].name;
+  if (confirm(`"${targetName}" 개인 항목을 정말 삭제하시겠습니까?`)) {
+    pCats.splice(index, 1);
+    savePersonalCategoriesConfig(pCats);
+    renderPersonalCategoryManagerList();
+  }
 }
 
-function addNewPersonalCategory() {
-  const nameInput = document.getElementById('newPersonalCategoryNameInput');
-  const colorInput = document.getElementById('newPersonalCategoryColorInput');
+function addNewPersonalCategoryFromKeep() {
+  const nameInput = document.getElementById('keepNewPerInput');
+  const colorInput = document.getElementById('keepNewPerColor');
   const name = nameInput.value.trim();
   const color = colorInput.value;
-  if (!name) { alert('새 개인 항목명을 입력해주세요.'); return; }
+  if (!name) return;
   let pCats = getPersonalCategoriesConfig();
   if (pCats.some(c => c.name === name) || getCategoriesConfig().some(c => c.name === name)) {
     alert('이미 존재하는 항목명입니다.'); return;
   }
   pCats.push({ name: name, color: color, visible: true });
   savePersonalCategoriesConfig(pCats);
-  nameInput.value = '';
   renderPersonalCategoryManagerList();
 }
 
@@ -2355,7 +2382,6 @@ async function loadCalendarAndPhotoData() {
     parsePhotoDB(photoText);
     parseAndRenderCalendar(eventText);
 
-    // 캘린더 타이틀 및 연도 범위 초기 UI 적용
     const t = getCalendarTitleSetting();
     const yr = getYearRangeSetting();
     applyCalendarTitleUI(t);
