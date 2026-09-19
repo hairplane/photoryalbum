@@ -1,4 +1,4 @@
-<!-- v1.8: 설정(⚙️) 버튼 헤더 우측 이동, 설정 창 내 메뉴식 분류 항목 관리(인라인 직접 수정 및 순서 변경) 구현 -->
+<!-- v1.9: 메인 화면 범례 항목 체크박스에 고유 색상이 적용되어 있으므로 불필요한 동그라미 아이콘(●) 제거 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -15,7 +15,7 @@ h1 {font-size: 1.5rem; color: #2c3e50; line-height: 1.35; margin: 0 auto;}
 @media (max-width: 768px) {header {flex-direction: column; gap: 8px;} h1 {font-size: 1.35rem;} .title-break {display: block; margin-top: 3px;}}
 h1 .version {font-size: 0.75rem; color: #2563eb; background: #dbeafe; padding: 2px 5px; border-radius: 4px; vertical-align: middle; margin-left: 4px;}
 
-/* 헤더 우측 설정 버튼 스타일 (v1.8) */
+/* 헤더 우측 설정 버튼 스타일 */
 .settings-open-btn {position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: #ffffff; color: #495057; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s ease;}
 .settings-open-btn:hover {background: #e2e8f0; border-color: #adb5bd;}
 @media (max-width: 768px) {.settings-open-btn {position: static; transform: none; align-self: flex-end;}}
@@ -286,7 +286,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap">(1994 - 2030)</span>
-        <span class="version">v1.8</span>
+        <span class="version">v1.9</span>
       </span>
     </h1>
     <button type="button" class="settings-open-btn" onclick="openSettingsModal()">⚙️ 설정</button>
@@ -327,7 +327,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
     <ul id="error-list" class="error-list"></ul>
   </div>
 
-  <!-- 범례 바 영역 (메인 화면에서 바로 체크박스로 디스플레이 제어) -->
+  <!-- 범례 바 영역 (메인 화면에서 체크박스에 색상이 들어가므로 ● 아이콘 제거 완료) -->
   <div class="legend-bar-wrapper">
     <div id="legendBar" class="legend-bar"></div>
   </div>
@@ -578,14 +578,14 @@ const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0Xa
 const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v1.8: 디폴트 분류 항목 및 메인 화면 범례 체크박스 연동 구현 */
+/* v1.9: 메인 화면 범례 체크박스에 색상이 들어가므로 ● 아이콘 제거 적용 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
   { name: '기념', color: '#f738f7', visible: true },
   { name: '여행', color: '#00b050', visible: true },
   { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v18';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v19';
 
 let globalCategoriesConfig = [];
 
@@ -909,7 +909,6 @@ function syncCategoriesFromDOM() {
   rows.forEach(row => {
     const name = row.querySelector('.category-name-input').value.trim();
     const color = row.querySelector('input[type="color"]').value;
-    // 기존 visible 상태 유지
     const oldCats = getCategoriesConfig();
     const foundOld = oldCats.find(c => c.name === name);
     const visible = foundOld ? foundOld.visible : true;
@@ -960,7 +959,7 @@ function addNewCategory() {
   renderCategoryManagerList();
 }
 
-/* 메인 화면 범례 바에서 직접 체크박스로 디스플레이(보이기/숨기기) 제어 */
+/* 메인 화면 범례 바에서 체크박스로 디스플레이 제어 (v1.9: 중복된 ● 아이콘 제거) */
 function renderLegendBar() {
   const legendBar = document.getElementById('legendBar');
   const cats = getCategoriesConfig();
@@ -969,9 +968,9 @@ function renderLegendBar() {
     const isChecked = cat.visible !== false ? 'checked' : '';
     html += `
       <div class="legend-item">
-        <label style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none;">
-          <input type="checkbox" ${isChecked} onchange="toggleMainCategoryVisible(${idx}, this.checked)" style="accent-color: ${cat.color}; cursor: pointer;">
-          <span style="color:${cat.color}; font-size:1.1rem; font-weight:bold;">●</span> ${cat.name}
+        <label style="display: inline-flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; font-weight: 600; color: #1e293b;">
+          <input type="checkbox" ${isChecked} onchange="toggleMainCategoryVisible(${idx}, this.checked)" style="accent-color: ${cat.color}; width: 14px; height: 14px; cursor: pointer;">
+          <span style="color: ${cat.color};">${cat.name}</span>
         </label>
       </div>
     `;
@@ -1744,7 +1743,7 @@ function openDayModal(year, month) {
     const day = item.day;
     if (day && day >= 1 && day <= lastDate) {
       const catProps = getCategoryProps(item.category);
-      if (catProps.visible === false) return; // 숨겨진 카테고리 일정은 일력에서도 제외
+      if (catProps.visible === false) return;
       if (!dayEventsMap[day]) dayEventsMap[day] = [];
       dayEventsMap[day].push(item);
     }
@@ -2042,7 +2041,6 @@ function renderCalendarTable() {
       td.onclick = () => openDayModal(year, month);
 
       const monthEvents = globalEventMap[`${year}-${month}`];
-      // 각 카테고리의 보이기 여부에 따라 필터링
       const filteredEvents = monthEvents ? monthEvents.filter(item => {
         const catProps = getCategoryProps(item.category);
         return catProps.visible !== false;
@@ -2191,4 +2189,3 @@ loadCalendarAndPhotoData();
 </script>
 </body>
 </html>
- 
