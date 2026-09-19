@@ -1,4 +1,4 @@
-<!-- v1.4: 구글 시트 category 탭 연동, 기본 분류 개편(행사, 기념, 여행, 미팅), 분류 항목 드래그 앤 드롭 정렬 적용 -->
+<!-- v1.5: 활성화된 분류 항목만 범례·일력에 디스플레이, 중요 태그 ★ 마크 적용, 오류 항목 범례 제외, 동적 분류 기반 유효성 검증 체계 구현 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -290,7 +290,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap">(1994 - 2030)</span>
-        <span class="version">v1.4</span>
+        <span class="version">v1.5</span>
       </span>
     </h1>
   </header>
@@ -588,14 +588,14 @@ const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0Xa
 const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v1.4: 디폴트 분류 항목 (행사, 기념, 여행, 미팅) 및 구글 시트 category 탭 연동 */
+/* v1.5: 디폴트 분류 항목 개편 (행사, 기념, 여행, 미팅) 및 활성화된 항목만 디스플레이, 중요 태그 ★ 마크 적용 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
   { name: '기념', color: '#f738f7', visible: true },
   { name: '여행', color: '#00b050', visible: true },
   { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v14';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v15';
 
 let globalCategoriesConfig = [];
 
@@ -971,7 +971,6 @@ function renderLegendBar() {
       html += `<div class="legend-item"><span style="color:${cat.color}; font-size:1.1rem; font-weight:bold;">●</span> ${cat.name}</div>`;
     }
   });
-  html += `<div class="legend-item"><span class="legend-error">X 오류</span></div>`;
   legendBar.innerHTML = html;
 }
 
@@ -2116,6 +2115,15 @@ function parseAndRenderCalendar(csvText) {
     if (category === '중요') {
       isImportant = true;
       category = '행사';
+    } else {
+      const activeCats = getCategoriesConfig().map(c => c.name);
+      if (category && !activeCats.includes(category)) {
+        isDataValid = false;
+        errorType = 'CATEGORY_ERROR';
+        errorInputVal = category;
+        errorReason = `등록되지 않은 분류명 ('${category}')`;
+        errorList.push(`분류 오류: "${title || '제목없음'}" (분류: '${category}')`);
+      }
     }
 
     if (parsedYear && parsedMonth && parsedDay) {
