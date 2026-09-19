@@ -1,4 +1,4 @@
-<!-- v1.5: 활성화된 분류 항목만 범례·일력에 디스플레이, 중요 태그 ★ 마크 적용, 오류 항목 범례 제외, 동적 분류 기반 유효성 검증 체계 구현 -->
+<!-- v1.6: 중요 태그 디자인 개편(하얀색 별표, 분류 색상 적용, 명칭 '중요'), 데이터 규칙 안내 영역 삭제, 오류 안내 타이틀에 (X) 표기 추가 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -19,14 +19,8 @@ h1 .version {font-size: 0.75rem; color: #2563eb; background: #dbeafe; padding: 2
 .error-box {border: 1px solid #f5c6cb; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 0.75rem; color: #721c24; background-color: #f8d7da;}
 .error-header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;}
 .error-box h3 {font-size: 0.85rem; color: #721c24; margin: 0;}
-.rule-toggle-btn {background-color: #ffffff; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s ease;}
-.rule-toggle-btn:hover {background-color: #fce8e6;}
-.error-list {padding-left: 16px; font-size: 0.75rem;}
+.error-list {padding-left: 16px; font-size: 0.75rem; margin: 0;}
 .error-list li {margin: 2px 0;}
-.rule-box-inner {display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e8a7ad; color: #491217; font-size: 0.75rem;}
-.rule-box-inner h4 {margin: 0 0 6px 0; font-size: 0.8rem; font-weight: bold; color: #721c24;}
-.rule-box-inner ul {margin: 0; padding-left: 16px;}
-.rule-box-inner li {margin-bottom: 4px;}
 
 /* 검색 바 영역 */
 .search-wrapper-group {display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; align-items: flex-start; width: 100%;}
@@ -75,7 +69,6 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .loading {text-align: center; padding: 20px; font-size: 0.9rem; color: #666;}
 
 /* 심볼 및 상태 스타일 */
-.legend-error {color: #ff1744; font-weight: bold; font-size: 0.85rem;}
 .month-cell {cursor: pointer; transition: all 0.15s ease;}
 .month-cell:hover {background-color: #e2e8f0 !important;}
 .month-cell.search-match {background-color: #fef08a !important; outline: 2px solid #f59e0b !important; outline-offset: -2px; box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); opacity: 1 !important;}
@@ -86,8 +79,9 @@ th:not(:first-child), td:not(:first-child) {width: 7.55%;}
 .symbol-error {color: #ff1744; font-size: 0.85rem !important; font-weight: bold; background-color: transparent; padding: 0;}
 .symbol-empty {color: #adb5bd; font-size: 0.7rem !important;}
 
-/* 중요 태그 스타일 */
-.important-star {color: #ff0033; font-size: 0.95rem; margin-right: 1px; vertical-align: middle; font-weight: bold;}
+/* 중요 태그 스타일 (v1.6: 하얀색 별표 및 분류 색상 연동) */
+.important-badge-icon {display: inline-flex; justify-content: center; align-items: center; width: 16px; height: 16px; border-radius: 50%; font-size: 0.65rem; color: #ffffff; font-weight: bold; margin-right: 1px; vertical-align: middle;}
+.important-star-inline {color: #ff0033; font-size: 0.95rem; margin-right: 1px; vertical-align: middle; font-weight: bold;}
 
 /* 모달 공통 스타일 */
 .modal-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center; padding: 8px;}
@@ -290,7 +284,7 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
       <span class="title-wrap">홍병희 가족 캘린더</span>
       <span class="title-break">
         <span class="title-wrap">(1994 - 2030)</span>
-        <span class="version">v1.5</span>
+        <span class="version">v1.6</span>
       </span>
     </h1>
   </header>
@@ -322,21 +316,12 @@ mark.photo-search-highlight {background-color: #a7f3d0; color: #064e3b; font-wei
     <div id="photoStripScroll" class="photo-strip-scroll"></div>
   </div>
 
-  <!-- 오류 안내 영역 -->
+  <!-- 입력 데이터 오류 안내 (X) 영역 (v1.6: 데이터 규칙 안내 섹션 삭제 및 타이틀에 (X) 표기) -->
   <div id="error-container" class="error-box" style="display: none;">
     <div class="error-header">
-      <h3>입력 데이터 오류 안내</h3>
-      <button type="button" id="rule-toggle-btn" class="rule-toggle-btn" onclick="toggleRuleBox()">데이터 규칙 ▼</button>
+      <h3 style="margin: 0;">입력 데이터 오류 안내 (X)</h3>
     </div>
     <ul id="error-list" class="error-list"></ul>
-    <div id="rule-box-inner" class="rule-box-inner">
-      <h4>💡 올바른 데이터 입력 규칙 안내</h4>
-      <ul>
-        <li><strong>이벤트DB 시트:</strong> A(일자), B(순번), C(분류), D(행사명), E(장소), F(비고), G(참석자)</li>
-        <li><strong>사진DB 시트:</strong> A(파일명), B(File ID), C(미리보기), D(날짜), E(순번), F(행사명), G(장소), H(비고), I(참석자)</li>
-        <li><strong>분류DB 시트(category):</strong> A(분류명), B(색상코드), C(보이기여부)</li>
-      </ul>
-    </div>
   </div>
 
   <!-- 범례 바 및 분류 관리 버튼 영역 (캘린더 매트릭스 상단) -->
@@ -588,14 +573,14 @@ const photoDbCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDT3n0Xa
 const categoryCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGZ1_GVdtQQz-aQHS9NOa5jnr06S8vumtQGfUIE2pxdGMrup5r6xGRMo7smsHV3Z276YXWBzB1zhB/pub?gid=1944212585&single=true&output=csv';
 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwfcRwbweUdxoMraSaI-MlhT6sGCzrS-q_U9ji_0jEZaOcrU8m4BHKl16QN5mtPHngo/exec';
 
-/* v1.5: 디폴트 분류 항목 개편 (행사, 기념, 여행, 미팅) 및 활성화된 항목만 디스플레이, 중요 태그 ★ 마크 적용 */
+/* v1.6: 디폴트 분류 항목 및 '중요' 태그 색상 연동 지원 */
 const DEFAULT_CATEGORIES = [
   { name: '행사', color: '#0066ff', visible: true },
   { name: '기념', color: '#f738f7', visible: true },
   { name: '여행', color: '#00b050', visible: true },
   { name: '미팅', color: '#f59e0b', visible: true }
 ];
-const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v15';
+const LOCAL_STORAGE_KEY_CATEGORIES = 'photoryalbum_custom_categories_v16';
 
 let globalCategoriesConfig = [];
 
@@ -965,7 +950,11 @@ function deleteCategory(index) {
 function renderLegendBar() {
   const legendBar = document.getElementById('legendBar');
   const cats = getCategoriesConfig();
-  let html = `<div class="legend-item"><span class="important-star">★</span> 중요 태그</div>`;
+  
+  // v1.6: '중요' 태그는 첫 번째 활성화된 분류 항목(또는 기본 '행사' 분류)의 색상을 상속받도록 설정
+  const firstVisibleCat = cats.find(c => c.visible !== false) || cats[0] || { color: '#0066ff' };
+  let html = `<div class="legend-item"><span class="important-badge-icon" style="background-color: ${firstVisibleCat.color};">★</span> 중요</div>`;
+  
   cats.forEach(cat => {
     if (cat.visible !== false) {
       html += `<div class="legend-item"><span style="color:${cat.color}; font-size:1.1rem; font-weight:bold;">●</span> ${cat.name}</div>`;
@@ -1522,18 +1511,6 @@ function getLunarHolidaysForYear(year) {
   return holidayMap;
 }
 
-function toggleRuleBox() {
-  const ruleBox = document.getElementById('rule-box-inner');
-  const toggleBtn = document.getElementById('rule-toggle-btn');
-  if (ruleBox.style.display === 'none' || ruleBox.style.display === '') {
-    ruleBox.style.display = 'block';
-    toggleBtn.textContent = '데이터 규칙 ▲';
-  } else {
-    ruleBox.style.display = 'none';
-    toggleBtn.textContent = '데이터 규칙 ▼';
-  }
-}
-
 function openPhotoViewer(photoList, eventTitle) {
   if (!photoList || photoList.length === 0) return;
   currentPhotoList = photoList;
@@ -2054,8 +2031,11 @@ function renderCalendarTable() {
           if (!item.isValid) {
             return `<span class="symbol-error" title="${tooltipText}">X</span>`;
           }
-          const symbolMark = item.isImportant ? '<span style="color:#ff0033;">★</span>' : '●';
-          return `<span style="color:${catProps.color};" title="${tooltipText}">${symbolMark}</span>`;
+          // v1.6: 중요 태그인 경우 해당 분류 색상의 하얀색 별표(★) 아이콘으로 렌더링
+          if (item.isImportant) {
+            return `<span class="important-badge-icon" style="background-color: ${catProps.color};" title="${tooltipText}">★</span>`;
+          }
+          return `<span style="color:${catProps.color};" title="${tooltipText}">●</span>`;
         }).join('');
         symbolsHtml += '</div>';
         td.innerHTML = symbolsHtml;
